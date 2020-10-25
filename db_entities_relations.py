@@ -30,8 +30,8 @@ class Board(db.entity):
     deck_codification: Required(int)    # binarie
     is_spell_active: Required(bool)    # = False
 
-#end match
-class End_Match():
+#end_match entity
+class End_Match(db.entity):
     is_end : Required(bool) # = True Depends on "Game"     
       
 #history entity
