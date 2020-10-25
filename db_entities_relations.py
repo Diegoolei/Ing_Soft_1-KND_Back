@@ -22,11 +22,12 @@ class Lobby(db.Entity):
 #player entity
 
 class Player(db.Entity):
+    #player_game             = Required(Game)  #Depends on Game
     player_lobby            = Required(Lobby)
     #player_id               = Required(User) #Depends on User
     player_number           = Required(int, unique = True)
     player_nick             = Required(str) 
-    player_role             = Required(bool)
+    player_role             = Required(int)
     player_is_alive         = Required(bool)
     player_chat_blocked     = Required(bool)
     player_director         = Required(bool)
