@@ -1,5 +1,6 @@
 from pony.orm import db_session, select, count
-from db_entities_relations import User #add the entities and relations as we define them in db_entities_relations.py
+from db_entities_relations import User
+from typing import Optional
 
 #some users functions
 
