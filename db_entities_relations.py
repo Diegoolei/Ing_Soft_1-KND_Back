@@ -2,10 +2,16 @@ from pony.orm import Database, PrimaryKey, Required, Optional, Set
 
 db = Database()
 
-#user entity
+# user entity
+class User(db.Entity):
+    user_id = PrimaryKey(int, auto=True) 
+    email = Required(str, unique=True)
+    username = Required(str, unique=True, max_len=16)
+    password = Required(str, max_len= 32)
+    photo = Optional(str)
 
-
-#lobby entity
+    
+# lobby entity
 
 class Lobby(db.Entity):
     match_id            = PrimaryKey(int, auto = True)
@@ -19,12 +25,12 @@ class Lobby(db.Entity):
 #game entity
 
 
-#player entity
+# player entity
 
 class Player(db.Entity):
     #player_game             = Required(Game)  #Depends on Game
     player_lobby            = Required(Lobby)
-    #player_id               = Required(User) #Depends on User
+    player_id               = Required(User) #Depends on User
     player_number           = Required(int, unique = True)
     player_nick             = Required(str) 
     player_role             = Required(int)
@@ -32,11 +38,6 @@ class Player(db.Entity):
     player_chat_blocked     = Required(bool)
     player_director         = Required(bool)
     player_minister         = Required(bool)
-
-
-
-#board entity
-
 
 #log entity
 
