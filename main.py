@@ -58,18 +58,6 @@ async def login(user: md.UserLogIn, Authorize: AuthJWT = Depends()):
     except:
         raise HTTPException(status_code=401, detail='Email does not exist')
 
-# In any other endpoint that is not registering and logging in, the first line between ()
-# must be passed as a parameter in the funciton.
-# And then as soon as the endpoint begins to add the 2nd line.
-# If you need to access the user, the 3rd line is made, from which we only get the user_name
-"""
-(Authorize: AuthJWT = Depends()):
-    # in the request to access.
-    Authorize.jwt_required()
-    # Access the identity of the current user with get_jwt_identity
-    current_user = Authorize.get_jwt_identity()
-"""
-
 
 # lobby endpoints
 
