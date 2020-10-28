@@ -1,13 +1,14 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr
+from enum import Enum
 
-#users's models
-
-
-#lobbies's models
+# users models
 
 
-# games's models
+# lobbies models
+
+
+# games models
 class ViewGame(BaseModel):
     #game_board
     game_is_started: bool = False # Depends on Lobby
