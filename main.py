@@ -307,9 +307,8 @@ async def post_proclamation(is_phoenix_procl: bool, game_id: int, user_id: int =
     )
 
 
-# ! TODO: ME LO TESTEAN XFA
 @app.get(
-    "/games/{game_id}/actions/",
+    "/games/{game_id}/actions/prophecy",
     status_code= status.HTTP_200_OK
 )
 async def spell_prophecy (game_id: int, user_id: int = Depends(hf.get_current_active_user)):
