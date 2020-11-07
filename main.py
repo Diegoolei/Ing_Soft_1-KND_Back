@@ -135,6 +135,22 @@ async def join_lobby(lobby_id: int, user_id: int = Depends(hf.get_current_active
         joinLobby_result = (f" Welcome to {lobby_name}")
     )
 
+
+
+@app.post("/lobby/{lobby_id}", 
+    response_model = md.LobbyIn
+)
+async def change_nick(lobby_id: int, new_nick:str, user_id: int = Depends(hf.get_current_active_user)):
+    # Check if lobby exists
+
+    # Check if nick is taken
+    dbf.change_nick(user_id, new_nick)
+
+    # Socket Alert all users
+
+    return md.ChangeNick(changeNick_result = f"Your nick has been sucessfully changed to {new_nick}") 
+
+    
 @app.delete(
     "/lobby/{lobby_id}", 
     status_code = status.HTTP_202_ACCEPTED, 

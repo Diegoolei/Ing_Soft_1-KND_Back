@@ -58,8 +58,10 @@ class LobbyOut(BaseModel):
 
 class JoinLobby(BaseModel):
     joinLobby_name : str
-    joinLobby_result = str
+    joinLobby_result : str
 
+class ChangeNick(BaseModel):
+    ChangeNick_result
 
 # game models
 class ViewGame(BaseModel):
