@@ -8,13 +8,12 @@ import helpers_functions as hf
 import models as md
 import db_functions as dbf
 import websocket_manager as wsm # WebSockets
-#from fastapi_jwt_auth import AuthJWT
 from datetime import datetime, timedelta
 
 app = FastAPI()
 wsManager = wsm.WebsocketManager() # WebSockets
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 # LogIn
+ACCESS_TOKEN_EXPIRE_MINUTES = 120 # LogIn
 
 ## Front
 origins = [
@@ -39,10 +38,10 @@ app.add_middleware(
           response_model=md.UserOut
           )
 async def register(new_user: md.UserIn) -> int:
-    if not new_user.valid_format_username():
+    if not hf.valid_format_username(new_user.userIn_username):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
             detail=" Can't parse username")
-    if not new_user.valid_format_password():
+    if not hf.valid_format_password(new_user.userIn_password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
             detail=" Can't parse password")
     if dbf.check_email_exists(new_user.userIn_email):
@@ -55,7 +54,7 @@ async def register(new_user: md.UserIn) -> int:
         dbf.insert_user(
             new_user.userIn_email,
             new_user.userIn_username,
-            new_user.userIn_password,
+            hf.get_password_hash(new_user.userIn_password),
             new_user.userIn_photo)
         return md.UserOut(
             userOut_username=new_user.userIn_username,
@@ -74,13 +73,13 @@ async def logIn(login_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=" Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={"Authorization": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = hf.create_access_token(
         data={"sub": user.user_name}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"} #TODO Front: You need bearer to receive token and send tokens
+    return {"access_token": access_token, "token_type": "Bearer"} #TODO Front: You need bearer to receive token and send tokens
 
 
 # lobby endpoints

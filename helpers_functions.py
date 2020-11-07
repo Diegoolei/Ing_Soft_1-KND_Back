@@ -14,6 +14,17 @@ import db_functions as dbf
 
 app = FastAPI()
 
+
+######################################################################################################################
+############################################### Register FUNTIONS ####################################################
+######################################################################################################################
+
+def valid_format_username(username: str) -> bool:
+    return 3 < len(username) < 17
+      
+def valid_format_password(password: str) -> bool:
+    return 7 < len(password) < 33
+
 ######################################################################################################################
 ################################################ LogIn FUNTIONS #######################################################
 ######################################################################################################################
@@ -24,27 +35,26 @@ ALGORITHM = "HS256"
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
 
-def verify_password(plain_password: str, hashed_password: str): 
-    print(f"plain_password: {plain_password}")
-    print(f"plain_password: {hashed_password}")
-    return plain_password == hashed_password
+def verify_password(plain_password: str, hashed_password: str):
+    print(hashed_password)
+    return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password): # Listo
+def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 
-def authenticate_user(username: str, password: str): # Listo
+def authenticate_user(username: str, password: str): 
     user = dbf.get_user_by_email(username)
     user_password = user.user_password
     if not user:
         return False
-    if not verify_password(password, user_password): #!FIXME
+    if not verify_password(password, user_password):
         return False
     return user
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None): # Listo
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -55,11 +65,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None): 
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)): # Its OOOOOOOOOOOOKKKKKKKKKKKKKKKKKKK
+async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={"Authorization": "Bearer"},
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
