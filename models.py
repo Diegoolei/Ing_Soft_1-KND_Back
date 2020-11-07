@@ -137,9 +137,9 @@ class ViewBoard(BaseModel):
 
       
 class Prophecy(BaseModel):
-    prophecy_card_0: bool
-    prophecy_card_1: bool
-    prophecy_card_2: bool
+    prophecy_card_0: int
+    prophecy_card_1: int
+    prophecy_card_2: int
     
 #class ViewSpells(int, Enum): # Depends on ViewBoard if the board_is_spell_active= True
 #    spell_caos = 0
@@ -153,7 +153,7 @@ class Prophecy(BaseModel):
 # log models
 # Usable for next sprint
 class ViewLog(BaseModel):
-    log_won_games_fenix: int = 0                # = 0
-    log_won_games_death_eater: int = 0          # = 0
-    log_lost_games_fenix: int = 0               # = 0
-    log_lost_games_death_eater: int = 0         # = 0
+    log_won_games_fenix: int = 0
+    log_won_games_death_eater: int = 0
+    log_lost_games_fenix: int = 0
+    log_lost_games_death_eater: int = 0
