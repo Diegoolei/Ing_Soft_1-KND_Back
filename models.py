@@ -1,26 +1,15 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr
 from enum import Enum
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-
-
-SECRET_KEY = "5becea4926a7daf6c72854463b1f0a27c400c81fe5ff28baf133af11642d1c88"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from datetime import datetime
 
 
 # user models
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
 class UserIn(BaseModel):
     userIn_email: EmailStr                      # API Request body    
     userIn_username: str                        # API Request body
     userIn_password: str                        # API Request body
     userIn_photo: Optional[str]
-    #userIn_disabled: Optional[bool] = None
 
     def valid_format_username(self) -> bool:
         return 3 < len(self.userIn_username) < 17
@@ -28,35 +17,20 @@ class UserIn(BaseModel):
     def valid_format_password(self) -> bool:
         return 7 < len(self.userIn_password) < 33
 
-      
+
 class UserOut(BaseModel):
     userOut_email: str                          # API response
     userOut_username: str                       # API response
     userOut_operation_result: str               # for Successful Operation
 
 
+# authorization models
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+  
+class TokenData(BaseModel):
+    email: Optional[str] = None
 
 
 # lobby models
@@ -163,7 +137,7 @@ class ViewBoard(BaseModel):
 # log models
 # Usable for next sprint
 class ViewLog(BaseModel):
-    log_won_games_fenix: int = 0                # = 0
-    log_won_games_death_eater: int = 0          # = 0
-    log_lost_games_fenix: int = 0               # = 0
-    log_lost_games_death_eater: int = 0         # = 0
+    log_won_games_fenix: int = 0         
+    log_won_games_death_eater: int = 0
+    log_lost_games_fenix: int = 0     
+    log_lost_games_death_eater: int = 0

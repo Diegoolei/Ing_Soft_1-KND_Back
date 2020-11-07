@@ -45,7 +45,9 @@ def insert_user(email: str, username: str, password: str,
         user_name=username,
         user_password=password,
         user_photo=photo, 
-        user_creation_dt=datetime.now())
+        user_creation_dt=datetime.now(),
+        user_disabled=False
+    )
 
 
 ##############################################################################################
