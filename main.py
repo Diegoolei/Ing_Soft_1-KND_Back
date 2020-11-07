@@ -14,7 +14,6 @@ app = FastAPI()
 wsManager = wsm.WebsocketManager() # WebSockets
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 120 # LogIn
-
 ## Front
 origins = [
     "http://localhost",
