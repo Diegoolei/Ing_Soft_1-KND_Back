@@ -48,9 +48,9 @@ def get_password_hash(password: str):
 
 def authenticate_user(username: str, password: str): 
     user = dbf.get_user_by_email(username)
-    user_password = user.user_password
     if not user:
         return False
+    user_password = user.user_password
     if not verify_password(password, user_password):
         return False
     return user

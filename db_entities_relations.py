@@ -11,7 +11,7 @@ class User(db.Entity):
     user_name               = Required(str, unique=True, max_len=16)  # user_name can't change
     user_password           = Required(str)
     user_photo              = Required(str)                           # photo is selected for default string
-    user_creation_dt        = Required(datetime) #! FIXME Added for checks endpoint 'Login'
+    user_creation_dt        = Required(datetime) 
     user_disabled           = Required(bool)
     user_lobby              = Set('Lobby')                            # many to many relation with User-Lobby, we use '' because Player is declarated after this call
     user_player             = Set('Player')                           # one to many relation with User-Player, we use '' because Player is declarated after this call
@@ -52,6 +52,7 @@ class Player(db.Entity):
     player_id               = PrimaryKey(int, auto=True)
     player_number           = Optional(int)    # Definied order
     player_nick             = Required(str)    # = userName Depends on User
+    player_nick_points      = Required(int)    # Starts in 0, max 10
     player_role             = Required(int)    # = -1 No asigned
     player_is_alive         = Required(bool)   # = True
     player_chat_blocked     = Required(bool)   # = False

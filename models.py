@@ -60,8 +60,12 @@ class JoinLobby(BaseModel):
     joinLobby_name : str
     joinLobby_result : str
 
+
+class Nick(BaseModel):
+    nick: str
+
 class ChangeNick(BaseModel):
-    ChangeNick_result
+    changeNick_result: str
 
 # game models
 class ViewGame(BaseModel):
