@@ -165,7 +165,6 @@ async def leave_lobby(lobby_id: int, user_id: int = auth.Depends(auth.get_curren
     raise_exception(status.HTTP_400_BAD_REQUEST,
                     (f"Player {user_id} was not in lobby {lobby_id}"))
 
-
 # game endpoints
 @app.delete(
     "/lobby/{lobby_id}/start_game",

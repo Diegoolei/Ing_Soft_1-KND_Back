@@ -19,6 +19,7 @@ If something like the following appears
 ```
 pyvenv-3: path/pyvenv-3.X
 ```
+
 the venv of your python3 is installed.
 
 If nothing appears, execute
@@ -69,9 +70,8 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
 
-### If do you want stop your server and after desactivate your virtual enviroment
+### Deactivate your virtual enviroment
 
 ```bash
-$ ^C
 $ deactivate
 ```
