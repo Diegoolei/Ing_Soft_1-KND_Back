@@ -318,7 +318,7 @@ async def start_game(lobby_id: int, user_id: int = Depends(auth.get_current_acti
     return md.GameOut(gameOut_result = " Your game has been started")
 
 
-@app.post(
+@app.get(
     "/games/list_games/",
     status_code = status.HTTP_200_OK,
     response_model = md.GameDict
