@@ -243,6 +243,13 @@ async def change_nick(lobby_id: int, new_nick: md.Nick, user_id: int = Depends(a
     response_model = md.LeaveLobby
 )
 async def leave_lobby(lobby_id: int, user_id: int = Depends(auth.get_current_active_user)):
+    lobby_exists = dbf.check_lobby_exists(lobby_id)
+    if not lobby_exists:
+        raise_exception(
+            status.HTTP_409_CONFLICT,
+            " The lobby you selected does not exist"
+        )
+    
     is_present = dbf.is_user_in_lobby(user_id, lobby_id)
     if not is_present:
         raise_exception(
@@ -319,7 +326,7 @@ async def start_game(lobby_id: int, user_id: int = Depends(auth.get_current_acti
 )
 async def select_director(player_number: md.PlayerNumber, game_id: int, user_id: int = Depends(auth.get_current_active_user)) -> int:
     # REVIEW Added user in game check
-    is_user_in_game= dbf.is_user_in_game(user_id, game_id)
+    is_user_in_game = dbf.is_user_in_game(user_id, game_id)
     if not is_user_in_game:
         raise_exception(
             status.HTTP_412_PRECONDITION_FAILED,
