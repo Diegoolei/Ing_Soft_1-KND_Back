@@ -91,48 +91,62 @@ async def login(login_data: auth.OAuth2PasswordRequestForm = auth.Depends()):
 
 
 @app.patch(
-    "/users/{user_id}/change_profile/",
-    status_code=status.HTTP_200_OK
+    "/users/change_profile/",
+    status_code=status.HTTP_200_OK,
+    response_model=md.ResponseModel
 )
 async def update_profile(profile_data: md.ChangeProfile, user_id: int = Depends(auth.get_current_active_user)) -> int:
-    if (profile_data.username is not None) and (
-            not hf.valid_format_username(profile_data.username)):
-        raise_exception(status.HTTP_400_BAD_REQUEST, "Can't parse username"
-                        )
-    if (profile_data.username is not None) and dbf.check_username_exists(
-            profile_data.username):
+    if (profile_data.changeProfile_username is None):
         raise_exception(
-            status.HTTP_409_CONFLICT, "Username already registered"
+            status.HTTP_400_BAD_REQUEST, 
+            "You must insert a username"
         )
-    dbf.update_user_profile(user_id, profile_data.username, profile_data.photo)
-    return "Your data has been updated correctly"
+
+    if not (hf.valid_format_username(profile_data.changeProfile_username)):
+        raise_exception(
+            status.HTTP_400_BAD_REQUEST, 
+            "Can't parse username"
+        )
+
+    if dbf.check_username_exists(profile_data.changeProfile_username):
+        raise_exception(
+            status.HTTP_409_CONFLICT, "Username is already registered"
+        )
+
+    if profile_data.changeProfile_photo == '' :
+        profile_data.changeProfile_photo = None
+    
+    dbf.update_user_profile(user_id, profile_data.changeProfile_username, profile_data.changeProfile_photo)
+    return md.ResponseModel(response = "Your data has been updated correctly")
 
 
 @app.patch(
-    "/users/{user_id}/change_profile/change_password/",
-    status_code=status.HTTP_200_OK
+    "/users/change_profile/change_password/",
+    status_code=status.HTTP_200_OK,
+    response_model=md.ResponseModel
 )
 async def change_password(pass_data: md.ChangePassword, user_id: int = Depends(auth.get_current_active_user)) -> int:
     user = dbf.get_user_by_id(user_id)
     if not auth.verify_password(
-            pass_data.current_password, user.user_password):
+            pass_data.changePassword_current_password, user.user_password):
         raise_exception(
             status.HTTP_401_UNAUTHORIZED, "Invalid password",
             {"Authorization": "Bearer"}
         )
-    if not hf.valid_format_password(pass_data.new_password):
+    if not hf.valid_format_password(pass_data.changePassword_new_password):
         raise_exception(
             status.HTTP_400_BAD_REQUEST, "Can't parse new password"
         )
-    if auth.verify_password(pass_data.new_password, user.user_password):
+
+    if auth.verify_password(pass_data.changePassword_new_password, user.user_password):
         raise_exception(
             status.HTTP_409_CONFLICT,
             "Can't register the same password you already have"
         )
-    pass_data.new_password = auth.get_password_hash(pass_data.new_password)
+    pass_data.changePassword_new_password = auth.get_password_hash(pass_data.changePassword_new_password)
 
-    dbf.change_password_user(user_id, pass_data.new_password)
-    return "Your password has been updated correctly"
+    dbf.change_password_user(user_id, pass_data.changePassword_new_password)
+    return md.ResponseModel(response = "Your password has been updated correctly")
 
 
 # lobby endpoints

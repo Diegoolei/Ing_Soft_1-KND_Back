@@ -57,16 +57,15 @@ def insert_user(email: str, username: str, password: str, photo: Optional[str]):
 
 
 @db_session
-def update_user_profile(user_id: int, username: Optional[str], photo: Optional[str]):
-    if username is not None:
-        dbe.User[user_id].user_name = username
+def update_user_profile(user_id: int, username: str, photo: str):
+    dbe.User[user_id].user_name = username
     if photo is not None:
         dbe.User[user_id].user_photo = photo
 
 
 @db_session
 def change_password_user(user_id: int, password: str):
-        dbe.User[user_id].user_password = password
+    dbe.User[user_id].user_password = password
 
 
 ##############################################################################################

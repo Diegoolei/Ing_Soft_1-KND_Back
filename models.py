@@ -3,6 +3,8 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 from datetime import datetime
 
+class ResponseModel(BaseModel):
+    response: str
 
 # user models
 class UserIn(BaseModel):
@@ -19,13 +21,13 @@ class UserOut(BaseModel):
 
 
 class ChangeProfile(BaseModel):
-    username: Optional[str] = None
-    photo: Optional[str] = None
+    changeProfile_username: str
+    changeProfile_photo: str = None
 
 
 class ChangePassword(BaseModel):
-    current_password: str
-    new_password: str
+    changePassword_current_password: str
+    changePassword_new_password: str
 
 
 # authorization models
