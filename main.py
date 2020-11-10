@@ -96,10 +96,13 @@ async def login(login_data: auth.OAuth2PasswordRequestForm = auth.Depends()):
     response_model=md.ResponseModel
 )
 async def update_profile(profile_data: md.ChangeProfile, user_id: int = Depends(auth.get_current_active_user)) -> int:
-    if (profile_data.changeProfile_username is None):
+    if profile_data.changeProfile_photo == '' :
+        profile_data.changeProfile_photo = None
+        
+    if ((profile_data.changeProfile_username is None) or (profile_data.changeProfile_photo is None)):
         raise_exception(
             status.HTTP_400_BAD_REQUEST, 
-            "You must insert a username"
+            "You must insert a username or a Photo"
         )
 
     if not (hf.valid_format_username(profile_data.changeProfile_username)):
@@ -112,9 +115,6 @@ async def update_profile(profile_data: md.ChangeProfile, user_id: int = Depends(
         raise_exception(
             status.HTTP_409_CONFLICT, "Username is already registered"
         )
-
-    if profile_data.changeProfile_photo == '' :
-        profile_data.changeProfile_photo = None
     
     dbf.update_user_profile(user_id, profile_data.changeProfile_username, profile_data.changeProfile_photo)
     return md.ResponseModel(response = "Your data has been updated correctly")
