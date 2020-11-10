@@ -99,7 +99,7 @@ async def update_profile(profile_data: md.ChangeProfile, user_id: int = Depends(
     if profile_data.changeProfile_photo == '' :
         profile_data.changeProfile_photo = None
         
-    if ((profile_data.changeProfile_username is None) or (profile_data.changeProfile_photo is None)):
+    if ((profile_data.changeProfile_username is None) and (profile_data.changeProfile_photo is None)):
         raise_exception(
             status.HTTP_400_BAD_REQUEST, 
             "You must insert a username or a Photo"
