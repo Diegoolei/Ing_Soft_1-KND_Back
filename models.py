@@ -21,13 +21,13 @@ class UserOut(BaseModel):
 
 
 class ChangeProfile(BaseModel):
-    changeProfile_username: str = None
-    changeProfile_photo: str = None
+    username: str = None
+    photo: str = None
 
 
 class ChangePassword(BaseModel):
-    changePassword_current_password: str
-    changePassword_new_password: str
+    current_password: str
+    new_password: str
 
 
 # authorization models
