@@ -32,7 +32,7 @@ class ChangePassword(BaseModel):
 
 class ProfileInformation(BaseModel):
     profile_username: str
-    profile_photo: str
+    profile_photo: str = ''
 
 
 # authorization models

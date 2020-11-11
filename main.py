@@ -96,10 +96,7 @@ async def login(login_data: auth.OAuth2PasswordRequestForm = auth.Depends()):
     )
 async def user_information(user_id: int = Depends(auth.get_current_active_user)):
     user = dbf.get_user_by_id(user_id)
-    info = md.ProfileInformation(
-        profile_username=user.user_name,
-        profile_photo='none'
-        )
+    info = md.ProfileInformation(profile_username=user.user_name)
     return info
 
 
