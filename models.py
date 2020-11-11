@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 from datetime import datetime
 
-class ResponseModel(BaseModel):
+class ResponseText(BaseModel):
     responseText: str
 
 # user models
