@@ -4,7 +4,7 @@ from enum import Enum
 from datetime import datetime
 
 class ResponseModel(BaseModel):
-    response: str
+    responseText: str
 
 # user models
 class UserIn(BaseModel):
@@ -21,7 +21,7 @@ class UserOut(BaseModel):
 
 
 class ChangeProfile(BaseModel):
-    changeProfile_username: str
+    changeProfile_username: str = None
     changeProfile_photo: str = None
 
 

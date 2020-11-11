@@ -117,7 +117,7 @@ async def update_profile(profile_data: md.ChangeProfile, user_id: int = Depends(
         )
     
     dbf.update_user_profile(user_id, profile_data.changeProfile_username, profile_data.changeProfile_photo)
-    return md.ResponseModel(response = "Your data has been updated correctly")
+    return md.ResponseModel(responseText = "Your data has been updated correctly")
 
 
 @app.patch(
@@ -146,7 +146,7 @@ async def change_password(pass_data: md.ChangePassword, user_id: int = Depends(a
     pass_data.changePassword_new_password = auth.get_password_hash(pass_data.changePassword_new_password)
 
     dbf.change_password_user(user_id, pass_data.changePassword_new_password)
-    return md.ResponseModel(response = "Your password has been updated correctly")
+    return md.ResponseModel(responseText = "Your password has been updated correctly")
 
 
 # lobby endpoints
