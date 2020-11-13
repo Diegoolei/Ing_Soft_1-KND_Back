@@ -183,10 +183,14 @@ def get_player_id_from_lobby(user_id: int, lobby_id: int):
     Returns a player_id from  lobby_id
     Returns 0 if the user_id doesn't have a player in the lobby_id
     """
-    user_try = dbe.User[user_id].user_player
-    for players in user_try:
-        if (players.player_lobby.lobby_id == lobby_id):
-            return players.player_id
+    user_players = dbe.User[user_id].user_player
+    for player in user_players:
+        try:
+            lobby = player.player_lobby
+        except AttributeError:
+            continue 
+        if (lobby.lobby_id == lobby_id):
+            return player.player_id
     return 0
 
 
