@@ -258,6 +258,13 @@ async def join_lobby(lobby_id: int, user_id: int = Depends(auth.get_current_acti
     lobby_id = lobby.lobby_id
     player_id = dbf.get_player_id_from_lobby(user_id, lobby_id)
 
+    #! FIXME Removes if is necessary
+    player_nick= dbf.get_player_nick_by_id(player_id)
+    socketList= [player_nick] #nick (str)
+    socketDic= { "TYPE": "NEW_PLAYER_JOINED", "PAYLOAD": socketList }
+    await wsManager.broadcastInLobby(lobby_id, socketDic)
+    #!
+
     return md.JoinLobby(
         joinLobby_name=lobby_name,
         joinLobby_player_id=player_id,
@@ -307,12 +314,14 @@ async def change_nick(lobby_id: int, new_nick: md.Nick, user_id: int = Depends(a
         )
 
     # TODO 1) Uncoment, test with integration Front-Back
-    # old_nick = dbf.get_player_nick_by_id(player_id)
+    old_nick = dbf.get_player_nick_by_id(player_id)
     nick_points = dbf.change_nick(player_id, new_nick.nick)
 
     # TODO 1) Uncoment, test with integration Front-Back
-    # await wsManager.broadcastInLobby(lobby_id, f" {old_nick} changed its
-    # nick to: {new_nick}")
+    await wsManager.broadcastInLobby(lobby_id, f" {old_nick} changed itsnick to: {new_nick}")
+    socketDict2= { "OLD_NICK": old_nick, "NEW_NICK": new_nick }
+    socketDict= { "TYPE": "CHANGED_NICK", "PAYLOAD": socketDict2 }
+    await wsManager.broadcastInLobby(lobby_id, socketDict)
 
     return md.ChangeNick(
         changeNick_result=(
@@ -353,18 +362,16 @@ async def leave_lobby(lobby_id: int, user_id: int = Depends(auth.get_current_act
         dbf.leave_lobby(actual_player)
         dbf.delete_lobby(lobby_id)
         # TODO 2) Uncoment, test with integration Front-Back
-        # await wsManager.broadcastInLobby(lobby_id, (f" {nick} has left the
-        # lobby"))
+        await wsManager.broadcastInLobby(lobby_id, (f" {nick} has left the lobby"))
+        
         return md.LeaveLobby(
-            leaveLobby_response=(
-                f" Player {nick} has left lobby {lobby_id} and was the creator, so the lobby was destroyed >:C")
+            leaveLobby_response=(f" Player {nick} has left lobby {lobby_id} and was the creator, so the lobby was destroyed >:C")
         )
 
     dbf.leave_lobby(actual_player)
 
     # TODO 2) Uncoment, test with integration Front-Back
-    # await wsManager.broadcastInLobby(lobby_id, (f" {nick} has left the
-    # lobby"))
+    await wsManager.broadcastInLobby(lobby_id, (f" {nick} has left the lobby"))
 
     return md.LeaveLobby(
         leaveLobby_response=(f" Player {nick} has left lobby {lobby_id}")
@@ -400,6 +407,10 @@ async def start_game(lobby_id: int, user_id: int = Depends(auth.get_current_acti
         lobby_id
     )
 
+    #TODO WebSocket
+    socketDict= { "TYPE": "START_GAME", "PAYLOAD": game_id }
+    await wsManager.broadcastInLobby(lobby_id, socketDict)
+
     return md.GameOut(gameOut_result=" Your game has been started")
 
 
@@ -428,7 +439,6 @@ async def list_games(start_from: int = 1, end_at: int = None, user_id: int = Dep
     response_model=md.SelectMYDirector
 )
 async def select_director(player_number: md.PlayerNumber, game_id: int, user_id: int = Depends(auth.get_current_active_user)) -> int:
-    # REVIEW Added user in game check
     is_user_in_game = dbf.is_user_in_game(user_id, game_id)
     if not is_user_in_game:
         raise_exception(
@@ -471,14 +481,14 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
         )
 
     #dbf.select_director(player_id, player_number.playerNumber, game_id) #REVIEW Removes
-    dbf.select_candidate(player_id, player_number.playerNumber, game_id) #REVIEW
+    dbf.select_candidate(player_id, player_number.playerNumber, game_id)
 
-    dbf.reset_votes(game_id) #REVIEW
+    dbf.reset_votes(game_id)
 
     return md.SelectMYDirector(
         dir_player_number=player_number.playerNumber,
         dir_game_id=game_id,
-        dir_game_response=(f" Player {player_nick} is now director candidate") #REVIEW
+        dir_game_response=(f" Player {player_nick} is now director candidate")
     )
 
 
@@ -524,9 +534,19 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             
             dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
             dbf.reset_votes(game_id) # Reset votes
-            dbf.select_director(player_id_candidate, actual_candidate, game_id) #REVIEW
+            dbf.select_director(player_id_candidate, actual_candidate, game_id)
+            
             #TODO 5) Uncoment, test with integration Front-Back
-            #await wsManager.broadcastInGame(game_id, (f" Successful Election..."))
+            await wsManager.broadcastInGame(game_id, (f" Successful Election..."))
+            # Get 3 cards
+            model_list= dbf.get_three_cards(game_id)
+            # Pass 3 cards as str #[card1, card2, card3] (list of 3 str) 
+            socket_list= list(model_list.prophecy_card_0, model_list.prophecy_card_1, model_list.prophecy_card_2)
+            socketDic={
+                "TYPE": "MINISTER_DISCARD", "PAYLOAD": socket_list
+            }
+            await wsManager.sendMessage(player_id_candidate, socketDic) # REVIEW
+            
         else:
             print(" Failed Election...")
             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
@@ -536,8 +556,15 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             player_id_candidate= dbf.get_player_id_by_player_number(player_number_candidate, game_id)
             dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
             dbf.reset_votes(game_id) # Reset votes
+            
             #TODO 5) Uncoment, test with integration Front-Back
-            #await wsManager.broadcastInGame(game_id, (f" Failed Election..."))
+            await wsManager.broadcastInGame(game_id, (f" Failed Election..."))
+            #! FIXME TypeError: cannot convert dictionary update sequence element #0 to a sequence
+            list1=[ player_number_candidate, player_id.player_vote ]
+            dic2=dict(list1)
+            dic1={ "TYPE": "ELECTION_RESULT", "PAYLOAD": dic2 }
+            await wsManager.broadcastInGame(game_id, dic1)
+            #!
 
     return md.VoteOut(
         voteOut=vote_recive.vote,
@@ -571,9 +598,21 @@ async def discard_card(cards: md.Card, game_id: int, user_id: int = Depends(auth
             discarted_cards= dbf.discardCard(cards.card_discarted, game_id, is_minister, is_director)
             # get_three_cards 2 first cards
             print(discarted_cards) #TODO Removes, test with integration Front-Back
+            
             #TODO 4) Uncoment, test with integration Front-Back
             # Websocket to Director... the first two cards (from deck) //
-            #await wsManager.broadcastInGame(game_id, (f" Minister send 2 cards to Director..."))
+            await wsManager.broadcastInGame(game_id, (f" Minister send 2 cards to Director..."))
+            #! REVIEW
+            # Get 3 cards
+            model_list= dbf.get_three_cards(game_id)
+            # Pass 2 cards as str #[card1, card2] (list of 2 str) 
+            socket_list= list(model_list.prophecy_card_0, model_list.prophecy_card_1)
+            socketDic= { "TYPE": "DIRECTOR_DISCARD", "PAYLOAD": socket_list}
+            # Get actual Director
+            number_actual_director= dbf.get_game_candidate_director(game_id)
+            id_actual_director= dbf.get_player_id_by_player_number(number_actual_director, game_id)
+            await wsManager.sendMessage(id_actual_director, socketDic) #! REVIEW Checks if it ok
+            
             return md.Card(
                 card_discarted= cards.card_discarted
             )
@@ -638,9 +677,14 @@ async def post_proclamation(
         is_phoenix_procl.proclamationCard_phoenix,
         game_id)  # is_phoenix_procl
 
-    ##!! Finish game with proclamations ##
     # TODO Change for endgame
+    #! REVIEW @Agus First try to end game <3
     if(board[0] >= 5):
+        socket_list= ["Phoenixes_won", "Free Dobby appears and congratulates the Phoenixes with a sock, hagrid is happy too ♥", "Dracco Malfloy disturbs an Hippogriff peace, gets 'beaked' and cries"]
+        socketDict={ "TYPE": "END_GAME", "PAYLOAD": socket_list }
+        await wsManager.broadcastInGame(game_id, socketDict)
+
+        #REVIEW @Agus Checks if the code run with raice <3 (Dont remove the prints)
         print("\n >>> The Phoenixes won!!! <<<\n")
         # Message from Phoenixes won
         print(" Free Dobby appears and congratulates the Phoenixes with a sock, hagrid is happy too ♥\n")
@@ -652,6 +696,11 @@ async def post_proclamation(
         )
     elif(board[1] == 4):  # DE win when total_players = 5 or 6
         if (5 <= dbf.get_game_total_players(game_id) <= 6):
+            socket_list= ["Death_Eaters_won", "Sirius Black is dead", "Hagrid and Dobby (with a dirty and broken sock) die"]
+            socketDict={ "TYPE": "END_GAME", "PAYLOAD": socket_list }
+            await wsManager.broadcastInGame(game_id, socketDict)
+            
+            #REVIEW @Agus Checks if the code run with raice <3 (Dont remove the prints)
             print("\n >>> Death Eaters won!!! <<<\n")
             # Message "Death Eaters won"
             print(" Sirius Black is dead\n")
@@ -663,6 +712,11 @@ async def post_proclamation(
             )
     elif(board[1] == 5):  # DE win when total_players = 7 or 8
         if (7 <= dbf.get_game_total_players(game_id) <= 8):
+            socket_list= ["Death_Eaters_won", "Sirius Black is dead", "Hagrid and Dobby (with a dirty and broken sock) die"]
+            socketDict={ "TYPE": "END_GAME", "PAYLOAD": socket_list }
+            await wsManager.broadcastInGame(game_id, socketDict)
+            
+            #REVIEW @Agus Checks if the code run with raice <3 (Dont remove the prints)
             print("\n >>> Death Eaters won!!! <<<\n")
             # Message "Death Eaters won"
             print(" Sirius Black is dead\n")
@@ -673,6 +727,11 @@ async def post_proclamation(
                 " Sirius Black is dead, Hagrid and Dobby (with a dirty and broken sock) die"
             )
     elif(board[1] >= 6):  # DE win when total_players = 9 or 10
+        socket_list= ["Death_Eaters_won", "Sirius Black is dead", "Hagrid and Dobby (with a dirty and broken sock) die"]
+        socketDict={ "TYPE": "END_GAME", "PAYLOAD": socket_list }
+        await wsManager.broadcastInGame(game_id, socketDict)
+        
+        #REVIEW @Agus Checks if the code run with raice <3 (Dont remove the prints)
         print("\n >>> Death Eaters won!!! <<<\n")
         # Message "Death Eaters won"
         print(" Sirius Black is dead\n")
@@ -700,6 +759,10 @@ async def post_proclamation(
     if (board[1] < 4):  # Don't Set next minister yet, first cast Avada Kedavra
         dbf.set_next_minister(game_id)
 
+    #TODO WebSockets
+    socketDic= { "TYPE": "PROCLAMATION", "PAYLOAD": is_phoenix_procl.proclamationCard_phoenix } #REVIEW: Change to str if is necessary
+    await wsManager.broadcastInGame(game_id, socketDic)
+
     return md.ViewBoard(
         board_promulged_fenix=board[0],
         board_promulged_death_eater=board[1],
@@ -713,7 +776,6 @@ async def post_proclamation(
     response_model=md.Prophecy
 )
 async def spell_prophecy(game_id: int, user_id: int = Depends(auth.get_current_active_user)):
-    # REVIEW Added user in game check
     is_user_in_game = dbf.is_user_in_game(user_id, game_id)
     if not is_user_in_game:
         raise_exception(
@@ -741,6 +803,9 @@ async def spell_prophecy(game_id: int, user_id: int = Depends(auth.get_current_a
             status.HTTP_412_PRECONDITION_FAILED,
             "The player is not the minister :("
         )
+
+    #TODO WebSockets
+    
 
     return dbf.get_three_cards(game_id)
 
@@ -773,7 +838,7 @@ async def spell_avada_kedavra(victim: md.Victim, game_id: int, user_id: int = De
             " You are not the minister :("
         )
 
-    total_proclamation_DE = dbf.get_death_eaters_proclamations(game_id)
+    total_proclamation_DE = dbf.get_total_proclamations_death_eater(game_id) #REVIEW: Fixed bug :)
     if (total_proclamation_DE <= 3):
         raise_exception(
             status.HTTP_412_PRECONDITION_FAILED,
@@ -804,9 +869,10 @@ async def spell_avada_kedavra(victim: md.Victim, game_id: int, user_id: int = De
 
     minister_name = dbf.get_player_nick_by_id(player_id)
     # TODO 3) Uncoment, test with integration Front-Back
-    # await wsManager.broadcastInGame(game_id, (f" Minister {minister_name}
-    # had a wand duel against {victim_name} and won, now {victim_name} is
-    # dead"))
+    await wsManager.broadcastInGame(game_id, (f" Minister {minister_name} had a wand duel against {victim_name} and won, now {victim_name} is dead"))
+    # TODO WebSockets
+    socketDic= { "TYPE": "AVADA_KEDAVRA", "PAYLOAD": victim_name } # REVIEW @Agus Change to player_number if is necessary
+    await wsManager.broadcastInGame(game_id, socketDic)
 
     return md.AvadaKedavra(
         AvadaKedavra_response=(
