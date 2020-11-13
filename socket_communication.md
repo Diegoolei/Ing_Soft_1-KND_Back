@@ -32,7 +32,6 @@ No socket communication
 `nick` **:** *string*  
 
 **Send to:** All players in lobby  
-**Include Endpoint Sender**: NO
 
 ---  
 
@@ -42,7 +41,6 @@ No socket communication
 `nick` **:** *string*  
 
 **Send to:** All players in lobby  
-**Include Endpoint Sender**: YES
 
 ---  
 
@@ -51,7 +49,6 @@ No socket communication
 `nick` **:** *string*  
 
 **Send to:** All players in lobby  
-**Include Endpoint Sender**: NO
 
 ---  
 
@@ -60,7 +57,6 @@ No socket communication
 `game_id` **:** *int*  
 
 **Send to:** All players in lobby  
-**Include Endpoint Sender**: NO
 
 ---  
 
@@ -75,7 +71,6 @@ When we need to choose a new Minister:
 `minister_nick` **:** *str*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: YES  
 **Also** send the available candidates for Director to the Minister  
 
 `{ "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": available_candiates }`  
@@ -93,7 +88,6 @@ We need to ask everyone to vote for the candidate the Minister selected:
 `candidate_nick` **:** *string*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: YES  
 
 ---  
 ## Vote (PUT) /games/{game_id}/select_director/vote
@@ -101,12 +95,12 @@ We need to ask everyone to vote for the candidate the Minister selected:
 No socket communication  
 ### If **ALL VOTES ARE IN**:
 `{ "TYPE": "ELECTION_RESULT", "PAYLOAD": votes }`  
-`votes` **:** *list of dictionaries* -- `[ player_nick : vote ]`  
+`votes` **:** *dictionary with nicks as keys* -- `{ player_nick : vote, ... }`  
+Example: `{ "kndlita" : True, "agus" : False, "shiro" : True }`  
 `player_nick` **:** *string*  
 `vote` **:** *bool* 
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: YES  
 
 ### If candidate was **ACCEPTED**:  
 `{ "TYPE": "MINISTER_DISCARD", "PAYLOAD": cards }`  
@@ -123,7 +117,6 @@ No socket communication
 `proclamation` **:** *int* *(like on deck)*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: YES  
 
 ---  
 ## Discard Card (PUT) /games/{game_id}/discard_card/
@@ -142,14 +135,14 @@ No socket communication
 `proclamation` **:** *int* *(like on deck)*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: NO  
 
 ---
 ## End Game *(Various Endpoints)*  
 `{ "TYPE": "ENDGAME", "PAYLOAD": result }`  
 `result` **:** *dictionary*  -- `{ "WINNER" : w, "ROLES" : roles }`  
 `w` **:** *int*  (0 == PHOENIX WINS || 1  == VOLDEMORT WINS)  
-`roles` **:** *list of dictionaries* -- `[ { "NICK" : player_nick, "ROLE" : secret_role } ]`  
+`roles` **:** *dictionary with nicks as key* -- `{ player_nick: secret_role, ... }`  
+Example: `{ "agus": 2, "shiro": 0, "diego": 1 }`  
 `secret_role` **:** *int*  (0 == PHOENIX || 1  == DEATH EATER || 2 == VOLDEMORT)  
 
 
@@ -169,7 +162,6 @@ So we can show that the minister is doing this
 `minister_nick` **:** *player_nick*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: NO
 
 --- 
 ## Avada Kedavra
@@ -177,7 +169,6 @@ So we can show that the minister is doing this
 `victim_nick` **:** *player_nick*
 
 **Send to:** All players in game  
-**Include Endpoint Sender**: NO
 
 
 --- 
@@ -212,15 +203,14 @@ But values can be that and also **Lists** or other **dictionaries**
 `subdict = { "KEY_A" : "SOMETHING", "KEY_B" : 4 }`  
 `myDict = { "KEY_1" : "SOME NAME", "KEY_2" : subdict }` 
 
-## Lists as value:  
-If we need to send a list of dictionaries with information about the players for example, we simply can construct the list and then put it as value:  
+## Lists of values:  
+If we need to send a list of entries with information about the players for example, we simply can construct the subdictionary and then put it as value:  
 
     players = dbe.get_players_by...(...) # get players
-    l = []
+    subdict = {}
     for player in players:
-        player_vote = player.player... # get vote
-        d = { "NICK" : player.player_nick, "VOTE" : player_vote }
-        l.append(d)
-    finalDict = { "TYPE": "ELECTION_RESULT", "VOTES": l }
+        player_vote = player...vote # get vote
+        subdict[player.player_nick] = player_vote
+    finalDict = { "TYPE": "ELECTION_RESULT", "VOTES": subdict }
     await ... broadcast ... (..., message=finalDict) # Send socket  
 
