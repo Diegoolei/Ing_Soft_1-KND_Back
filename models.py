@@ -66,6 +66,7 @@ class JoinLobby(BaseModel):
     joinLobby_name : str
     joinLobby_player_id: int
     joinLobby_result : str
+    joinLobby_nicks : list
 
 
 class Nick(BaseModel):
