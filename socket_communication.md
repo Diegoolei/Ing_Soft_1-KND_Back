@@ -4,14 +4,11 @@ We **cannot** send *Models*. We can only send plain strings, or python dictionar
 This file specifies what the Front end expects from the websocket.  
 ## **General structure:**  
 Sending pure strings are depreciated. Even basic chat will be sent by dictionary. The structure of all messages will be of the form:  
-```
-{
-    "TYPE": ...,
-    "PAYLOAD": ...
-}
-```
+
+`{ "TYPE": ..., "PAYLOAD": ... }`
+
 The *keys* `TYPE` and `PAYLOAD` should always be present
-The value of `TYPE` signals the type of **action** we're signaling the player, the value in `PAYLOAD` is relevant information (read: *arguments*) necesary to perform the action.
+The value of `TYPE` signals the type of **action** we're sending the player, the value in `PAYLOAD` is relevant information (read: *arguments*) necesary to perform the action.
 
 ## Register (POST) /users/
 No socket communication
@@ -31,7 +28,8 @@ No socket communication
 ---  
 
 ## Join Lobby (POST) /lobby/{lobby_id}/
-`{ "TYPE": "NEW_PLAYER_JOINED", "PAYLOAD": nick (str) }`  
+`{ "TYPE": "NEW_PLAYER_JOINED", "PAYLOAD": nick }`  
+`nick` **:** *string*  
 
 **Send to:** All players in lobby  
 **Include Endpoint Sender**: NO
@@ -39,9 +37,9 @@ No socket communication
 ---  
 
 ## Change Nick (POST) /lobby/{lobby_id}/change_nick
-`{ "TYPE": "CHANGED_NICK", "PAYLOAD": payload (dict) }`  
-
-with **payload** = `{ "OLD_NICK": (str), "NEW_NICK": (str) }`  
+`{ "TYPE": "CHANGED_NICK", "PAYLOAD": payload }`  
+`payload` **:** *dictionary*  -- `{ "OLD_NICK": nick, "NEW_NICK": nick }`  
+`nick` **:** *string*  
 
 **Send to:** All players in lobby  
 **Include Endpoint Sender**: YES
@@ -49,7 +47,8 @@ with **payload** = `{ "OLD_NICK": (str), "NEW_NICK": (str) }`
 ---  
 
 ## Leave Lobby (DELETE) /lobby/{lobby_id}/
-`{ "TYPE": "PLAYER_LEFT", "PAYLOAD": nick (str) }`  
+`{ "TYPE": "PLAYER_LEFT", "PAYLOAD": nick }`  
+`nick` **:** *string*  
 
 **Send to:** All players in lobby  
 **Include Endpoint Sender**: NO
@@ -57,10 +56,11 @@ with **payload** = `{ "OLD_NICK": (str), "NEW_NICK": (str) }`
 ---  
 
 ## Start Game (DELETE) /lobby/{lobby_id}/start_game/
-`{ "TYPE": "START_GAME", "PAYLOAD": game_id (int) }`  
+`{ "TYPE": "START_GAME", "PAYLOAD": game_id }`  
+`game_id` **:** *int*  
 
 **Send to:** All players in lobby  
-**Include Endpoint Sender**: YES
+**Include Endpoint Sender**: NO
 
 ---  
 
@@ -71,25 +71,26 @@ No socket communication
 
 ## Start of Turn *(Various endpoints)*
 When we need to choose a new Minister:  
-`{ "TYPE": "NEW_MINISTER", "PAYLOAD": player_number (int) }`  
+`{ "TYPE": "NEW_MINISTER", "PAYLOAD": minister_nick }`  
+`minister_nick` **:** *str*
 
 **Send to:** All players in game  
 **Include Endpoint Sender**: YES  
-
 **Also** send the available candidates for Director to the Minister  
 
-`{ "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": available_candiates (list of player_number) }`  
+`{ "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": available_candiates }`  
+`available_candiates` **:** *list of nicks*  
+Example: `{ "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": ["lao", "shiro", "kndlita"] }`  
 
 **Send to:** Current Minister  
-Example: `{ "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": [3, 4, 6] }`  
-Note: **player_number**, not *player_id*  
 
 ---  
 
 ## Select Director (POST) /games/{game_id}/select_director/
 We need to ask everyone to vote for the candidate the Minister selected:  
 
-`{ "TYPE": "REQUEST_VOTE", "PAYLOAD": candidate_number (player_number) }`  
+`{ "TYPE": "REQUEST_VOTE", "PAYLOAD": candidate_nick}`  
+`candidate_nick` **:** *string*
 
 **Send to:** All players in game  
 **Include Endpoint Sender**: YES  
@@ -98,93 +99,128 @@ We need to ask everyone to vote for the candidate the Minister selected:
 ## Vote (PUT) /games/{game_id}/select_director/vote
 ### If not all votes are entered:  
 No socket communication  
-### If last vote:
-`{ "TYPE": "ELECTION_RESULT", "PAYLOAD": votes (dict) }`  
+### If **ALL VOTES ARE IN**:
+`{ "TYPE": "ELECTION_RESULT", "PAYLOAD": votes }`  
+`votes` **:** *list of dictionaries* -- `[ player_nick : vote ]`  
+`player_nick` **:** *string*  
+`vote` **:** *bool* 
 
-with **votes** = `[ player_number (int) : vote (bool) ]`  
-with **v**: True => LUMOS  
 **Send to:** All players in game  
 **Include Endpoint Sender**: YES  
 
 ### If candidate was **ACCEPTED**:  
-`{ "TYPE": "MINISTER_DISCARD", "PAYLOAD": [card1, card2, card3] (list of 3 str) }`  
+`{ "TYPE": "MINISTER_DISCARD", "PAYLOAD": cards }`  
+`cards` **:** *list of 3 ints*  -- `[ card1, card2, card3 ]`  
+`cardx` **:** *int* *(like on deck)*
 
-with **cardx** = `"PHOENIX_PROCLAMATION"` or `"DEATH_EATER_PROCLAMATION"`  
 **Send to:** Current Minister  
 
-### If candidate was **REJECTED** and **CAOS**:  
-`{ "TYPE": "CAOS_PROCLAMATION", "PAYLOAD": proclamation (str) }`  
+### If candidate was **REJECTED** and **NO** CAOS:  
+No socket communication
 
-with **proclamation** = `"PHOENIX_PROCLAMATION"` or `"DEATH_EATER_PROCLAMATION"`  
+### If candidate was **REJECTED** and **CAOS**:  
+`{ "TYPE": "CAOS_PROCLAMATION", "PAYLOAD": proclamation }`  
+`proclamation` **:** *int* *(like on deck)*
+
 **Send to:** All players in game  
 **Include Endpoint Sender**: YES  
 
 ---  
 ## Discard Card (PUT) /games/{game_id}/discard_card/
-### If minister is discarding  
-`{ "TYPE": "DIRECTOR_DISCARD", "PAYLOAD": [card1, card2] (list of 2 str) }`  
+### If **minister** is discarding  
+`{ "TYPE": "DIRECTOR_DISCARD", "PAYLOAD": cards }`  
+`cards` **:** *list of 2 ints*  -- `[ card1, card2 ]`  
 
-with **cardx** = `"PHOENIX_PROCLAMATION"` or `"DEATH_EATER_PROCLAMATION"`  
 **Send to:** Current Director  
-### If director is discarding  
+
+### If **director** is discarding  
 No socket communication  
 
 ---
 ## Post Proclamation (PUT) /games/{game_id}/proclamation/
-`{ "TYPE": "PROCLAMATION", "PAYLOAD": proclamation (str) }`  
+`{ "TYPE": "PROCLAMATION", "PAYLOAD": proclamation }`  
+`proclamation` **:** *int* *(like on deck)*
 
-with **proclamation** = `"PHOENIX_PROCLAMATION"` or `"DEATH_EATER_PROCLAMATION"`  
 **Send to:** All players in game  
-**Include Endpoint Sender**: YES  
+**Include Endpoint Sender**: NO  
 
 ---
 ## End Game *(Various Endpoints)*  
--  
+`{ "TYPE": "ENDGAME", "PAYLOAD": result }`  
+`result` **:** *dictionary*  -- `{ "WINNER" : w, "ROLES" : roles }`  
+`w` **:** *int*  (0 == PHOENIX WINS || 1  == VOLDEMORT WINS)  
+`roles` **:** *list of dictionaries* -- `[ { "NICK" : player_nick, "ROLE" : secret_role } ]`  
+`secret_role` **:** *int*  (0 == PHOENIX || 1  == DEATH EATER || 2 == VOLDEMORT)  
+
 
 ---
 ## Trigger Spell *(End of Post Proclamation)*  
--  
+### Adivination:
+`{ "TYPE": "REQUEST_SPELL", "PAYLOAD": "ADIVINATION" }`  
+**Send to:** Current Minister
+### Avada Kedavra:
+`{ "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }`  
+**Send to:** Current Minister
 
 ---
 ## Adivination (GET) /games/{game_id}/spell/prophecy/  
 So we can show that the minister is doing this  
-`{ "TYPE": "ADIVINATION_NOTICE", "PAYLOAD": minister_number (player_number) }`  
+`{ "TYPE": "ADIVINATION_NOTICE", "PAYLOAD": minister_nick }`  
+`minister_nick` **:** *player_nick*
 
 **Send to:** All players in game  
 **Include Endpoint Sender**: NO
 
 --- 
 ## Avada Kedavra
-`{ "TYPE": "AVADA_KEDAVRA", "PAYLOAD": victim_number (player_number) }`  
+`{ "TYPE": "AVADA_KEDAVRA", "PAYLOAD": victim_nick }`  
+`victim_nick` **:** *player_nick*
 
 **Send to:** All players in game  
 **Include Endpoint Sender**: NO
 
 
 --- 
-## --
--
+## Chat
+`{ "TYPE": "CHAT", "PAYLOAD": message }`  
+`message` **:** *string*
+  
+---  
+# Python Dictionaries:  
+## Initialization  
+There are two common ways to create a dictionary. One is already with some keys we're going to use:  
 
---- 
-## --
--
+`myDict = { "KEY_1" : 1, "KEY_2" : 2 }`  
 
---- 
-## --
--
+The other is creating a empty one and then adding the vales 1 by 1:  
 
---- 
-## --
--
+`myDict = {}`  
+`myDict["KEY_1"] = 1`  
+`myDict["KEY_2"] = 2`  
 
---- 
-## --
--
+This can be done with loops:  
+    
+    myDict = {}
+    for (i in range(1, 11)):
+        key = f"KEY_{i}"
+        myDict[key] = i
 
---- 
-## --
--
+## Subdictionaries (dictionaries as value)  
+Pretty much anything (except classes) can be put as value and key of a dictionary. keys must be immutable (string, ints, ...)  
+But values can be that and also **Lists** or other **dictionaries**  
 
---- 
-## --
--
+`subdict = { "KEY_A" : "SOMETHING", "KEY_B" : 4 }`  
+`myDict = { "KEY_1" : "SOME NAME", "KEY_2" : subdict }` 
+
+## Lists as value:  
+If we need to send a list of dictionaries with information about the players for example, we simply can construct the list and then put it as value:  
+
+    players = dbe.get_players_by...(...) # get players
+    l = []
+    for player in players:
+        player_vote = player.player... # get vote
+        d = { "NICK" : player.player_nick, "VOTE" : player_vote }
+        l.append(d)
+    finalDict = { "TYPE": "ELECTION_RESULT", "VOTES": l }
+    await ... broadcast ... (..., message=finalDict) # Send socket  
+
