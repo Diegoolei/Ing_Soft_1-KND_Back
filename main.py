@@ -522,7 +522,7 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             (f" You are dead in the game ({game_id}), you can't vote")
         )
 
-    actual_vote= dbf.check_has_voted(player_id)
+    actual_vote = dbf.check_has_voted(player_id)
     if actual_vote:
         raise_exception(
             status.HTTP_412_PRECONDITION_FAILED,
@@ -532,26 +532,37 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
     actual_votes = dbf.player_vote(vote_recive.vote, player_id, game_id) 
 
     if (actual_votes == (dbf.get_game_total_players(game_id))):
-        status_votes= dbf.get_status_vote(game_id)
+        status_votes = dbf.get_status_vote(game_id)
+
+        actual_candidate = dbf.get_game_candidate_director(game_id)
+        player_id_candidate = dbf.get_player_id_by_player_number(actual_candidate, game_id)
+        
+        dict1 = dict()
+        for player in dbf.get_players_game(game_id):
+            dict1[player.player_nick] = player.player_vote
+        dic2={ "TYPE": "ELECTION_RESULT", "PAYLOAD": dic1 }
+        await wsManager.broadcastInGame(game_id, dic2)
+
+        dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
+        dbf.reset_votes(game_id) # Reset votes
+
         if(status_votes > 0): # Acepted candidate
             print(" Successful Election...")
-            actual_candidate= dbf.get_game_candidate_director(game_id)
-            player_id_candidate= dbf.get_player_id_by_player_number(actual_candidate, game_id)
-            
-            dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
-            dbf.reset_votes(game_id) # Reset votes
             dbf.select_director(player_id_candidate, actual_candidate, game_id) #REVIEW
             #TODO 5) Uncoment, test with integration Front-Back
             #await wsManager.broadcastInGame(game_id, (f" Successful Election..."))
+            # Get 3 cards
+            model_list = dbf.get_three_cards(game_id)
+            # Pass 3 cards as str #[card1, card2, card3] (list of 3 str) 
+            socket_list = list(model_list.prophecy_card_0, model_list.prophecy_card_1, model_list.prophecy_card_2)
+            socketDic={
+                "TYPE": "MINISTER_DISCARD", "PAYLOAD": socket_list
+            }
+            await wsManager.sendMessage(player_id_candidate, socketDic) # REVIEW
         else:
             print(" Failed Election...")
             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
             dbf.set_next_minister_failed_election(game_id)
-            
-            player_number_candidate= dbf.get_game_candidate_director(game_id)
-            player_id_candidate= dbf.get_player_id_by_player_number(player_number_candidate, game_id)
-            dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
-            dbf.reset_votes(game_id) # Reset votes
             #TODO 5) Uncoment, test with integration Front-Back
             #await wsManager.broadcastInGame(game_id, (f" Failed Election..."))
 
@@ -859,7 +870,7 @@ async def open_websocket(websocket: wsm.WebSocket, player_id: int):
     await websocket.send_json({"TYPE": "REQUEST_AUTH", "PAYLOAD": f"Timeout: {TIMEOUT}"})
     try:
         token = await wsm.wait_for(websocket.receive_text(), timeout=TIMEOUT)
-    except wsm.timeoutErr:
+    except Exception:
         await websocket.send_text("Connection rejected. No auth token received")
         await websocket.close()
         return
