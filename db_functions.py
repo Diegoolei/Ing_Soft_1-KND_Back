@@ -186,10 +186,10 @@ def get_player_id_from_lobby(user_id: int, lobby_id: int):
     user_players = dbe.User[user_id].user_player
     for player in user_players:
         try:
-            lobby = player.player_lobby
+            this_lobby_id = player.player_lobby.lobby_id
         except AttributeError:
             continue 
-        if (lobby.lobby_id == lobby_id):
+        if (this_lobby_id == lobby_id):
             return player.player_id
     return 0
 

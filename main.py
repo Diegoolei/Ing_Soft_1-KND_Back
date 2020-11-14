@@ -260,7 +260,8 @@ async def join_lobby(lobby_id: int, user_id: int = Depends(auth.get_current_acti
         joinLobby_name=lobby_name,
         joinLobby_player_id=player_id,
         joinLobby_result=(f" Welcome to {lobby_name}"),
-        joinLobby_nicks=player_nicks
+        joinLobby_nicks=player_nicks,
+        joinLobby_is_owner=dbf.is_player_lobby_owner(user_id, lobby_id)
     )
 
 @app.post(
@@ -853,10 +854,11 @@ async def create_log(user_id: int, role_was_fenix: bool,  won: bool):
 
 @app.websocket("/websocket/{player_id}")
 async def open_websocket(websocket: wsm.WebSocket, player_id: int):
+    TIMEOUT = 8.0
     await websocket.accept()
-    await websocket.send_text("Send auth token")
+    await websocket.send_json({"TYPE": "REQUEST_AUTH", "PAYLOAD": f"Timeout: {TIMEOUT}"})
     try:
-        token = await wsm.wait_for(websocket.receive_text(), timeout=8.0)
+        token = await wsm.wait_for(websocket.receive_text(), timeout=TIMEOUT)
     except wsm.timeoutErr:
         await websocket.send_text("Connection rejected. No auth token received")
         await websocket.close()
