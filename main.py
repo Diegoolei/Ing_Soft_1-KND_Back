@@ -396,16 +396,13 @@ async def start_game(lobby_id: int, user_id: int = Depends(auth.get_current_acti
             " List of players should be between 5 and 10"
         )
 
-    # Changed game_id to lobby_id because after the line 405 the lobby has deleted and the 
-    # USERS need to know this on Lobby. Tell me if they need know it when they are on the game (and not on lobby)
-    socketDict= { "TYPE": "START_GAME", "PAYLOAD": lobby_id }
-    await wsManager.broadcastInLobby(lobby_id, socketDict)
-
-    dbf.insert_game(
+    game_id = dbf.insert_game(
         md.ViewGame(game_total_players=game_player_quantity),
         lobby_id
     )
 
+    socketDict= { "TYPE": "START_GAME", "PAYLOAD": game_id }
+    await wsManager.broadcastInGame(game_id, socketDict)
     return md.GameOut(gameOut_result=" Your game has been started")
 
 
@@ -436,11 +433,11 @@ async def get_relative_game_information(game_id: int, user_id: int = Depends(aut
         raise_exception(status.HTTP_412_PRECONDITION_FAILED,
         "You are not on the game requested.")   
 
-    game_info = dbf.get_relative_game_information(game_id, user_id)
+    game_info = dbf.get_relative_game_information(user_id, game_id)
     for nick in game_info["player_array"]:
         p_num = game_info["player_array"][nick]["player_number"]
         p_id = dbf.get_player_id_by_player_number(p_num, game_id)
-        game_info["player_array"][nick]["connected"] = wsManager.isPlayerConnected(p_id)
+        game_info["player_array"][nick]["connected"] = True
     return game_info
 
 
@@ -505,7 +502,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
 
 #REVIEW
 @app.put(
-    "games/{game_id}/select_director/vote",
+    "games/{game_id}/vote/",
     status_code=status.HTTP_200_OK,
     response_model=md.VoteOut
 )

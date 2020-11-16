@@ -599,6 +599,8 @@ def insert_game(gameModelObj: md.ViewGame, lobby_id: id):
     print(" Starting a new game...")
     game.game_is_started = True
     print("\n-> Game Started! ≧◉ᴥ◉≦")
+
+    return game.game_id
     
 
 @db_session
