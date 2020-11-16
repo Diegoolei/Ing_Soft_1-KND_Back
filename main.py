@@ -505,7 +505,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
 
 #REVIEW
 @app.put(
-    "/games/{game_id}/vote/",
+    "games/{game_id}/select_director/vote",
     status_code=status.HTTP_200_OK,
     response_model=md.VoteOut
 )
