@@ -588,7 +588,7 @@ def get_actual_director(game_id):
     Returns actual directors's player number
     """
     players = dbe.Game[game_id].game_players
-    for player in players
+    for player in players:
         if (player.player_director == True):
             return player.player_number
 
@@ -1157,7 +1157,7 @@ def discardCard(index: int, game_id: int, is_minister: bool, is_director: bool):
     coded_game_deck = dbe.Game[game_id].game_board.board_deck_codification
     decoded_game_deck = hf.decode_deck(coded_game_deck)
     discarted_deck= decoded_game_deck
-    discarted_deck.pop(index-1) # Isnt it + 1?
+    discarted_deck.pop(index-1)
 
     # Coded new board_deck for db
     coded_game_deck = hf.encode_deck(discarted_deck)
