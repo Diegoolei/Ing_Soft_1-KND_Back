@@ -742,38 +742,38 @@ def get_roles_relative_to_player(player_id: int, game_id : int):
 @db_session
 def get_spell(game_id: int):
     """
-    Returns -1 if there are not spells that should be called actually
-    Returns 0 if the spell that should be called is "Crucio"
-    Returns 1 if the spell that should be called is "Imperius"
-    Returns 2 if the spell that should be called is "Prophecy"
-    Returns 3 if the spell that should be called is "Avada Kedavra"
+    Returns "No Spell" if there are not spells that should be called actually
+    Returns "Crucio" if the spell that should be called is "Crucio"
+    Returns "Imperius" if the spell that should be called is "Imperius"
+    Returns "Prophecy" if the spell that should be called is "Prophecy"
+    Returns "Avada Kedavra" if the spell that should be called is "Avada Kedavra"
     """
     game = dbe.Game[game_id]
     death_eater_proclamations = game.game_board.board_promulged_death_eater
     total_players = game.game_total_players
     if (9 <= total_players <= 10):
         if (1 <= death_eater_proclamations <= 2):
-            return 0
+            return "Crucio"
         if (death_eater_proclamations == 3):
-            return 1
+            return "Imperius"
         if (4 <= death_eater_proclamations <= 5):
-            return 3
+            return "Avada Kedavra"
     if (7 <= total_players <= 8):
         if (death_eater_proclamations == 1):
-            return -1
+            return "No Spell"
         if (death_eater_proclamations == 2):
-            return 0
+            return "Crucio"
         if (death_eater_proclamations == 3):
-            return 1
+            return "Imperius"
         if (4 <= death_eater_proclamations <= 5):
-            return 3
+            return "Avada Kedavra"
     if (5 <= total_players <= 6):
         if (1 <= death_eater_proclamations <= 2):
-            return -1
+            return "No Spell"
         if (death_eater_proclamations == 3):
-            return 2
+            return "Prophecy"
         if (4 <= death_eater_proclamations <= 5):
-            return 3
+            return "Avada Kedavra"
 
 
 @db_session

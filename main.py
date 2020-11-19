@@ -6,8 +6,8 @@ import db_functions as dbf
 import authorization as auth
 import helpers_functions as hf
 
-public_ip = "190.195.56.40"
-local_ip = "192.168.0.11"
+public_ip = "xxx.xxx.xx.xx" # Insert your own public IP address here IF YOU ARE TRYING TO HOST
+local_ip = "192.168.0.11" # Insert your own private IP address here IF YOU ARE TRYING TO HOST
 
 app = FastAPI()
 wsManager = wsm.WebsocketManager()
@@ -791,26 +791,26 @@ async def post_proclamation(
 
     # Informs the minister what spell has to be casted (if any)
     actual_spell = dbf.get_spell(game_id)
-    if (actual_spell != -1):   
-        if (actual_spell == 0): # Crucio
+    if (actual_spell != "No Spell"):   
+        if (actual_spell == "Crucio"):
             player_number_current_minister= dbf.get_actual_minister(game_id)
             player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
             socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "CRUCIO" }
             await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-        elif (actual_spell == 1): # Imperius
+        elif (actual_spell == "Imperius"):
             player_number_current_minister= dbf.get_actual_minister(game_id)
             player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
             socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "IMPERIUS" }
             await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-        elif (actual_spell == 2): # Prophecy // Adivination
+        elif (actual_spell == "Prophecy"):
             player_number_current_minister= dbf.get_actual_minister(game_id)
             player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
             socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "ADIVINATION" }
             await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-        elif (actual_spell == 3): # Avada Kedavra
+        elif (actual_spell == "Avada Kedavra"): 
             player_number_current_minister= dbf.get_actual_minister(game_id)
             player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
             socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }
@@ -828,7 +828,7 @@ async def post_proclamation(
     status_code=status.HTTP_200_OK,
     response_model=md.ResponseText
 )
-async def spell_expelliarmus(game_id: int, user_id: int = Depends(auth.get_current_active_user)):
+async def spell_expelliarmus(minister_decition: md.MinisterDecition, game_id: int, user_id: int = Depends(auth.get_current_active_user)):
     game_exists = dbf.check_game_exists(game_id)
     if not game_exists:
         raise_exception(
@@ -864,16 +864,24 @@ async def spell_expelliarmus(game_id: int, user_id: int = Depends(auth.get_curre
                 " You can not do this, expeliarmus has been already rejected this turn"
             )
     
+    if ((dbf.expeliarmus_state(game_id) == 1) and (minister_decition.ministerDecition is None)):
+        raise_exception(
+                status.HTTP_409_CONFLICT,
+                " You need to make a decition as the minister"
+            )
+
+    
     if (dbf.expeliarmus_state(game_id) == 0):
         dbf.activate_expeliarmus(game_id)
         miniser_number = dbf.get_actual_minister(game_id)
         minister_id = dbf.get_player_id_by_player_number(miniser_number, game_id)
         minister_nick= dbf.get_player_nick_by_id(minister_id)
         socketDic = { "TYPE": "EXPELIARMUS_NOTICE", "PAYLOAD": minister_nick }
+        await wsManager.broadcastInGame(game_id, socketDic)
         responseText = "Expeliarmus stage has started"
 
     else:
-        if minister_accepts:
+        if minister_decition.ministerDecition:
             responseText = "Expeliarmus stage has been accepted"
             dbf.add_failed_elections(game_id)
             dbf.set_next_minister_failed_election(game_id)
@@ -897,7 +905,8 @@ async def spell_expelliarmus(game_id: int, user_id: int = Depends(auth.get_curre
             director_id = dbf.get_player_id_by_player_number(director_number, game_id)
             director_nick = dbf.get_player_nick_by_id(director_id)
             socketDic = { "TYPE": "EXPELIARMUS_REJECT_NOTICE", "PAYLOAD": director_nick }
-
+            await wsManager.broadcastInGame(game_id, socketDic)
+            
             # Director Normally select and post proclamation
             dbf.reject_expeliarmus(game_id)
             responseText = "Expeliarmus stage has been rejected"
@@ -928,7 +937,7 @@ async def spell_crucio(victim: int, game_id: int, user_id: int = Depends(auth.ge
     total_players = dbf.get_game_total_players(game_id)
 
     # If crucio should't be called right now
-    if (dbf.get_spell(game_id) != 0): 
+    if (dbf.get_spell(game_id) != "Crucio"): 
 
         if (9 <= total_players <= 10):
             if (death_eater_proclamations == 0):
