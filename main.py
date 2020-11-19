@@ -1013,7 +1013,7 @@ async def spell_crucio(victim: int, game_id: int, user_id: int = Depends(auth.ge
 
     # If crucio should't be called right now
     if (dbf.get_spell(game_id) != "Crucio"): 
-
+        death_eater_proclamations = dbf.get_total_proclamations_death_eater(game_id)
         if (9 <= total_players <= 10):
             if (death_eater_proclamations == 0):
                raise_exception(
