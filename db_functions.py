@@ -583,6 +583,17 @@ def get_actual_minister(game_id):
 
 
 @db_session
+def get_actual_director(game_id):
+    """
+    Returns actual directors's player number
+    """
+    players = dbe.Game[game_id].game_players
+    for player in players
+        if (player.player_director == True):
+            return player.player_number
+
+        
+@db_session
 def check_game_exists(game_id: int):
     for game in dbe.Game.select():
         if (game.game_id == game_id):
