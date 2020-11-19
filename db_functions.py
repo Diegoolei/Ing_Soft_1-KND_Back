@@ -889,6 +889,7 @@ def clean_director(player_id: int, game_id: int):
     dbe.Player[player_id].player_director = False
     dbe.Player[player_id].player_is_candidate = False #! FIXME ¿Remove?
 
+    
 @db_session
 def set_next_minister_failed_election(game_id: int):
     """
@@ -1157,7 +1158,7 @@ def discardCard(index: int, game_id: int, is_minister: bool, is_director: bool):
     coded_game_deck = dbe.Game[game_id].game_board.board_deck_codification
     decoded_game_deck = hf.decode_deck(coded_game_deck)
     discarted_deck= decoded_game_deck
-    discarted_deck.pop(index-1)
+    discarted_deck.pop(index-1) # Isnt it + 1?
 
     # Coded new board_deck for db
     coded_game_deck = hf.encode_deck(discarted_deck)
