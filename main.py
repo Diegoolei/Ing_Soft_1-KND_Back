@@ -920,12 +920,21 @@ async def spell_expelliarmus(minister_decition: md.MinisterDecition, game_id: in
 
     player_id = dbf.get_player_id_from_game(user_id, game_id)
     is_director = dbf.is_player_director(player_id)
-    if not is_director:
+    if ((not is_director) and (dbf.expeliarmus_state(game_id) == 0)) :
         raise_exception(
             status.HTTP_401_UNAUTHORIZED,
             " You are not the director"
         )
 
+        
+    player_id = dbf.get_player_id_from_game(user_id, game_id)
+    is_minister = dbf.is_player_minister(player_id)
+    if ((not is_minister) and (dbf.expeliarmus_state(game_id) == 1)) :
+        raise_exception(
+            status.HTTP_401_UNAUTHORIZED,
+            " You are not the minister"
+        )
+        
     death_eater_proclamations = dbf.get_total_proclamations_death_eater(game_id) 
     if not (death_eater_proclamations == 5):
         raise_exception(
