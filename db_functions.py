@@ -32,6 +32,11 @@ def get_user_by_player_id(player_id: int):
 
 
 @db_session
+def get_user_id_by_player_id(player_id: int):
+    return dbe.Player[player_id].player_user.user_id
+
+
+@db_session
 def check_email_exists(new_email):
     return dbe.User.exists(user_email = new_email)
 
@@ -503,7 +508,7 @@ def get_game_total_players(game_id: int):
 
 
 @db_session
-def is_expeliarmus_active(game_id: int):
+def expeliarmus_state(game_id: int):
     return dbe.Game[game_id].game_expeliarmus
 
 
@@ -933,8 +938,6 @@ def set_next_minister_imperius(victim_number: int, game_id: int):
     """
     Called when Imperius become active
     """
-    game_total_players= get_game_total_players(game_id)
-
     # Old Minister
     actual_minister = dbe.Game[game_id].game_actual_minister
 

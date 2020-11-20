@@ -609,7 +609,8 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
     total_players_alive_in_game = dbf.get_game_total_players(game_id)
 
     total_players_alive_in_game = total_players_alive_in_game - (dbf.get_dead_players(game_id))
-    if (actual_votes == total_players_alive_in_game):
+    is_vote_player = dbf.check_has_voted(player_id) 
+    if (actual_votes == total_players_alive_in_game & is_vote_player):
         status_votes = dbf.get_status_vote(game_id)
         actual_candidate = dbf.get_game_candidate_director(game_id)
         player_id_candidate = dbf.get_player_id_by_player_number(actual_candidate, game_id)
