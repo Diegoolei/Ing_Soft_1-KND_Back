@@ -27,6 +27,11 @@ def get_user_by_id(id: int):
 
 
 @db_session
+def get_user_id_by_player_id(player_id: int):
+    return dbe.Player[player_id].player_user.user_id
+
+
+@db_session
 def get_user_by_player_id(player_id: int):
     return dbe.Player[player_id].player_user
 
@@ -770,11 +775,34 @@ def get_roles_relative_to_player(player_id: int, game_id : int):
     elif (is_death_eater or (is_voldemort and len(players) < 7)):
         for player in players:
             roles[player.player_nick] = player.player_role
-
     else:
         raise ValueError(f"Error in get_roles_relative_to_player called with player_id={player_id} and game_id={game_id}")
     
     return roles
+
+
+@db_session
+def get_game_step_turn(game_id: int):
+    return dbe.Game[game_id].game_step_turn
+
+
+@db_session
+def set_game_step_turn(step_turn: str, game_id: int):
+    """
+    step_turn: START_GAME, START_TURN, SELECT_CANDIDATE_ENDED, VOTATION_ENDED_OK, VOTATION_ENDED_NO, DISCARD_ENDED, POST_PROCLAMATION_ENDED
+    
+    if the step_turn are not correct, the function don't change the db
+    """
+    if(step_turn == "START_GAME" or 
+        step_turn == "START_TURN" or 
+        step_turn == "SELECT_CANDIDATE_ENDED" or 
+        step_turn == "VOTATION_ENDED_OK" or
+        step_turn == "VOTATION_ENDED_NO" or
+        step_turn == "DISCARD_ENDED" or
+        step_turn == "POST_PROCLAMATION_ENDED"):
+        dbe.Game[game_id].game_step_turn = step_turn
+    else:
+        print(f" step_turn was not successfully set")
 
 
 @db_session
@@ -790,19 +818,19 @@ def get_spell(game_id: int):
     death_eater_proclamations = game.game_board.board_promulged_death_eater
     total_players = game.game_total_players
     if (9 <= total_players <= 10):
-        if (1 <= death_eater_proclamations <= 2):
-            return "Crucio"
-        if (death_eater_proclamations == 3):
-            return "Imperius"
+        # if (1 <= death_eater_proclamations <= 2):
+        #     return "Crucio"
+        # if (death_eater_proclamations == 3):
+        #     return "Imperius"
         if (4 <= death_eater_proclamations <= 5):
             return "Avada Kedavra"
     if (7 <= total_players <= 8):
         if (death_eater_proclamations == 1):
             return "No Spell"
-        if (death_eater_proclamations == 2):
-            return "Crucio"
-        if (death_eater_proclamations == 3):
-            return "Imperius"
+        # if (death_eater_proclamations == 2):
+        #     return "Crucio"
+        # if (death_eater_proclamations == 3):
+        #     return "Imperius"
         if (4 <= death_eater_proclamations <= 5):
             return "Avada Kedavra"
     if (5 <= total_players <= 6):
@@ -935,8 +963,6 @@ def set_next_minister_imperius(victim_number: int, game_id: int):
     """
     Called when Imperius become active
     """
-    game_total_players= get_game_total_players(game_id)
-
     # Old Minister
     actual_minister = dbe.Game[game_id].game_actual_minister
 

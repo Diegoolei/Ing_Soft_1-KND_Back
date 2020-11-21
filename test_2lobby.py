@@ -1,191 +1,13 @@
 import config
 config.database = "test_data_base.sqlite"
+
 from main import app
 from fastapi.testclient import TestClient
 from fastapi import Form
+import test_1logIn as logIn
 import pytest
 
 client = TestClient(app)
-
-
-#################################################### LogIn ####################################################
-#################################################### LogIn ####################################################
-#################################################### LogIn ####################################################
-
-
-def test_register_Argentina():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "A@a.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Argentina"
-                    }
-                    )
-    assert response.status_code == 201
-    assert response.json() == {"userOut_username":"Argentina",
-                            "userOut_email": "A@a.com",
-                            "userOut_operation_result": " Succesfully created!"}
-
-
-def getToken_Argentina():
-    response = client.post("/login/", data={"username":"A@a.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Brasil():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "B@b.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Brasil"
-                    }
-                    )
-
-
-def getToken_Brasil():
-    response = client.post("/login/", data={"username":"B@b.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Carol():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "C@c.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Carol"
-                    }
-                    )
-
-
-def getToken_Carol():
-    response = client.post("/login/", data={"username":"C@c.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Dexter():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "D@d.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Dexter"
-                    }
-                    )
-
-
-def getToken_Dexter():
-    response = client.post("/login/", data={"username":"D@d.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Esteban_quito():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "E@e.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Esteban_quito"
-                    }
-                    )
-
-
-def getToken_Esteban_quito():
-    response = client.post("/login/", data={"username":"E@e.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_FaMAF():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "F@f.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "FaMAF"
-                    }
-                    )
-
-
-def getToken_FaMAF():
-    response = client.post("/login/", data={"username":"F@f.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Ganzua():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "G@g.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Ganzua"
-                    }
-                    )
-
-
-def getToken_Ganzua():
-    response = client.post("/login/", data={"username":"G@g.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Hugo():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "H@h.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Hugo"
-                    }
-                    )
-
-
-def getToken_Hugo():
-    response = client.post("/login/", data={"username":"H@h.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Iatoy():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "I@i.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Iatoy"
-                    }
-                    )
-
-
-def getToken_Iatoy():
-    response = client.post("/login/", data={"username":"I@i.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-def test_register_Joker():
-    response = client.post(
-                    "/users/",
-                    json = { 
-                    "userIn_email": "J@j.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Joker"
-                    }
-                    )
-
-
-def getToken_Joker():
-    response = client.post("/login/", data={"username":"J@j.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
 
 #################################################### Logged in Lobby Tests ####################################################
 #################################################### Logged in Lobby Tests ####################################################
@@ -196,7 +18,7 @@ def getToken_Joker():
 
 # Test with all arguments
 def test_create_new_lobby():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -212,7 +34,7 @@ def test_create_new_lobby():
 
 # Test without min players
 def test_create_new_lobby_WO_min_players():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -227,7 +49,7 @@ def test_create_new_lobby_WO_min_players():
 
 # Test without Max players
 def test_create_new_lobby_WO_Max_players():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -242,7 +64,7 @@ def test_create_new_lobby_WO_Max_players():
 
 # Test without optional Arguments
 def test_create_new_lobby_WO_Optionals():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -256,7 +78,7 @@ def test_create_new_lobby_WO_Optionals():
 
 # Test bad arguments
 def test_create_new_lobby_BA():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -272,7 +94,7 @@ def test_create_new_lobby_BA():
 
 # Test short name
 def test_create_new_lobby_Short_name():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -288,7 +110,7 @@ def test_create_new_lobby_Short_name():
 
 # Test long name
 def test_create_new_lobby_Long_name():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -304,7 +126,7 @@ def test_create_new_lobby_Long_name():
 
 # Test repeated name
 def test_create_new_lobby_RN():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.post(
                     "/lobby/",
                     headers = { "Authorization": token },
@@ -327,7 +149,7 @@ def test_create_new_lobby_RN():
 
 # List lobbies All parameters
 def test_list_lobbies():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.get(
                     "/lobby/list_lobbies/?start_from=0&end_at=10",
                     headers = { 
@@ -339,7 +161,7 @@ def test_list_lobbies():
 
 # List lobbies no parameters
 def test_list_lobbies_NP():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.get(
                     "/lobby/list_lobbies/",
                     headers = { "Authorization": token }
@@ -349,7 +171,7 @@ def test_list_lobbies_NP():
 
 # List lobbies start parameter
 def test_list_lobbies_SP():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.get(
                     "/lobby/list_lobbies/?start_from=1",
                     headers = { 
@@ -360,7 +182,7 @@ def test_list_lobbies_SP():
 
 # List lobbies end parameters
 def test_list_lobbies_EP():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.get(
                     "/lobby/list_lobbies/?end_at=10",
                     headers = { 
@@ -372,7 +194,7 @@ def test_list_lobbies_EP():
 
 # List lobbies BAD parameters
 def test_list_lobbies_BP():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.get(
                     "/lobby/list_lobbies/?start_from=10&end_at=1",
                     headers = { 
@@ -389,7 +211,7 @@ def test_list_lobbies_BP():
 
 # Test join Lobby OK
 def test_join_lobby():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -402,7 +224,7 @@ def test_join_lobby():
 
 # Test join Already in lobby
 def test_join_lobby_AIL():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -415,7 +237,7 @@ def test_join_lobby_AIL():
 
 # Test join Lobby Doesnt exist
 def test_join_lobby_DNE():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.post(
                     "/lobby/0/",
                     headers = { 
@@ -429,7 +251,7 @@ def test_join_lobby_DNE():
 
 # Test join 3
 def test_join_lobby_3():
-    token = getToken_Carol()
+    token = logIn.getToken_Carol()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -442,7 +264,7 @@ def test_join_lobby_3():
 
 # Test join 4
 def test_join_lobby_4():
-    token = getToken_Dexter()
+    token = logIn.getToken_Dexter()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -455,7 +277,7 @@ def test_join_lobby_4():
 
 # Test join 5
 def test_join_lobby_5():
-    token = getToken_Esteban_quito()
+    token = logIn.getToken_Esteban_quito()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -468,7 +290,7 @@ def test_join_lobby_5():
 
 # Test join 6
 def test_join_lobby_6():
-    token = getToken_FaMAF()
+    token = logIn.getToken_FaMAF()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -481,7 +303,7 @@ def test_join_lobby_6():
 
 # Test join 7
 def test_join_lobby_7():
-    token = getToken_Ganzua()
+    token = logIn.getToken_Ganzua()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -494,7 +316,7 @@ def test_join_lobby_7():
 
 # Test join 8
 def test_join_lobby_8():
-    token = getToken_Hugo()
+    token = logIn.getToken_Hugo()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -507,7 +329,7 @@ def test_join_lobby_8():
 
 # Test join 9
 def test_join_lobby_9():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -520,7 +342,7 @@ def test_join_lobby_9():
 
 # Test Lobby already full
 def test_join_lobby_FULL():
-    token = getToken_Joker()
+    token = logIn.getToken_Joker()
     response = client.post(
                     "/lobby/1/",
                     headers = { 
@@ -536,7 +358,7 @@ def test_join_lobby_FULL():
 
 # Test Change Nick, ok 1 
 def test_change_nick_1():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "1xxx"
     puntos = 9
     response = client.post(
@@ -551,7 +373,7 @@ def test_change_nick_1():
 
 # Test Change Nick, ok 2
 def test_change_nick_2():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "2xxx"
     puntos = 8
     response = client.post(
@@ -566,7 +388,7 @@ def test_change_nick_2():
 
 # Test Change Nick, ok 3
 def test_change_nick_3():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "3xxx"
     puntos = 7
     response = client.post(
@@ -581,7 +403,7 @@ def test_change_nick_3():
 
 # Test Change Nick, ok 4
 def test_change_nick_4():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "4xxx"
     puntos = 6
     response = client.post(
@@ -596,7 +418,7 @@ def test_change_nick_4():
 
 # Test Change Nick, ok 5
 def test_change_nick_5():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "5xxx"
     puntos = 5
     response = client.post(
@@ -611,7 +433,7 @@ def test_change_nick_5():
 
 # Test Change Nick, ok 6
 def test_change_nick_6():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "6xxx"
     puntos = 4
     response = client.post(
@@ -626,7 +448,7 @@ def test_change_nick_6():
 
 # Test Change Nick, ok 7
 def test_change_nick_7():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "7xxx"
     puntos = 3
     response = client.post(
@@ -641,7 +463,7 @@ def test_change_nick_7():
 
 # Test Change Nick, ok 8
 def test_change_nick_8():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "8xxx"
     puntos = 2
     response = client.post(
@@ -655,7 +477,7 @@ def test_change_nick_8():
 
 # Test Change Nick, ok 9
 def test_change_nick_9():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "9xxx"
     puntos = 1
     response = client.post(
@@ -670,7 +492,7 @@ def test_change_nick_9():
 
 # Test Change Nick, ok 10
 def test_change_nick_10():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "10xx"
     puntos = 0
     response = client.post(
@@ -685,9 +507,8 @@ def test_change_nick_10():
 
 # Test Change Nick, player doesnt have enough points
 def test_change_nick_points():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "9xxx"
-    puntos = 1
     response = client.post(
                     "/lobby/1/change_nick",
                     headers = { 
@@ -700,9 +521,8 @@ def test_change_nick_points():
 
 # Test Change Nick, nick should have at least 4 char 
 def test_change_nick_min():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "1"
-    puntos = 9
     response = client.post(
                     "/lobby/1/change_nick",
                     headers = { 
@@ -715,9 +535,8 @@ def test_change_nick_min():
 
 # Test Change Nick, nick exeeds max characters
 def test_change_nick_Max():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "1xxxxxxxxxxxxxxxxxxxxxx"
-    puntos = 9
     response = client.post(
                     "/lobby/1/change_nick",
                     headers = { 
@@ -730,9 +549,8 @@ def test_change_nick_Max():
 
 # Test Change Nick, Lobby does not exist
 def test_change_nick_lobby_DE():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "1xxx"
-    puntos = 9
     response = client.post(
                     "/lobby/0/change_nick",
                     headers = { 
@@ -745,9 +563,8 @@ def test_change_nick_lobby_DE():
 
 # Test Change Nick, user not in lobby
 def test_change_nick_lobby_NIL():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     new_nick = "1xxx"
-    puntos = 9
     response = client.post(
                     "/lobby/2/change_nick",
                     headers = { 
@@ -760,9 +577,8 @@ def test_change_nick_lobby_NIL():
 
 # Test Change Nick, Nick already taken
 def test_change_nick_lobby_NAT():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     new_nick = "10xx"
-    puntos = 9
     response = client.post(
                     "/lobby/1/change_nick",
                     headers = { 
@@ -779,7 +595,7 @@ def test_change_nick_lobby_NAT():
 
 # Leave Lobby OK
 def test_leave_lobby():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     response = client.delete(
                     "/lobby/1",
                     headers = { 
@@ -792,7 +608,7 @@ def test_leave_lobby():
 
 # Leave Lobby Does not exist
 def test_leave_lobby_DNE():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     response = client.delete(
                     "/lobby/0",
                     headers = { 
@@ -805,7 +621,7 @@ def test_leave_lobby_DNE():
 
 # Leave Lobby User not in lobby
 def test_leave_lobby_UNL():
-    token = getToken_Iatoy()
+    token = logIn.getToken_Iatoy()
     response = client.delete(
                     "/lobby/2",
                     headers = { 
@@ -818,7 +634,7 @@ def test_leave_lobby_UNL():
 
 # Join lobby 2
 def test_join_leave_lobby():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.post(
                     "/lobby/2/",
                     headers = { 
@@ -831,7 +647,7 @@ def test_join_leave_lobby():
 
 # Leave Lobby Creator
 def test_leave_lobby_creator():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.delete(
                     "/lobby/2",
                     headers = { 
@@ -847,7 +663,7 @@ def test_leave_lobby_creator():
 
 # Test start game lobby exist
 def test_start_game_LNE():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.delete(
                     "/lobby/0/start_game",
                     headers = { 
@@ -861,7 +677,7 @@ def test_start_game_LNE():
 
 # Test start game User In Lobby
 def test_start_game_UIN():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.delete(
                     "/lobby/3/start_game",
                     headers = { 
@@ -875,7 +691,7 @@ def test_start_game_UIN():
 
 # Test start game min - max players
 def test_start_game_MmP():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.delete(
                     "/lobby/3/start_game",
                     headers = { 
@@ -889,7 +705,7 @@ def test_start_game_MmP():
 
 # Test start game user is Owner
 def test_start_game_UIO():
-    token = getToken_Brasil()
+    token = logIn.getToken_Brasil()
     response = client.delete(
                     "/lobby/1/start_game",
                     headers = { 
@@ -903,7 +719,7 @@ def test_start_game_UIO():
 
 # Test start game
 def test_start_game():
-    token = getToken_Argentina()
+    token = logIn.getToken_Argentina()
     response = client.delete(
                     "/lobby/1/start_game",
                     headers = { 

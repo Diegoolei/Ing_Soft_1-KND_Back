@@ -1,8 +1,8 @@
 
-all: test_lobby.py
+all:
 	rm -f test_data_base.sqlite
 	pytest --disable-warnings
 
-print: test_lobby.py
+print:
 	rm -f test_data_base.sqlite
 	pytest --disable-warnings --capture=no
