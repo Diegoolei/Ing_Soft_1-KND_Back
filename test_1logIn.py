@@ -235,300 +235,300 @@ def getToken_Joker():
     return token
 
 
-#! USER 11 Amber
-def test_register_Amber():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "amber@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Amber"
-                    }
-            )
+# #! USER 11 Amber
+# def test_register_Amber():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "amber@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Amber"
+#                     }
+#             )
 
 
-def getToken_():
-    response = client.post("/login/", data={"username":"amber@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_():
+#     response = client.post("/login/", data={"username":"amber@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 12 Benny
-def test_register_Benny():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "benny@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Benny"
-                    }
-            )
+# #! USER 12 Benny
+# def test_register_Benny():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "benny@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Benny"
+#                     }
+#             )
 
 
-def getToken_Benny():
-    response = client.post("/login/", data={"username":"benny@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Benny():
+#     response = client.post("/login/", data={"username":"benny@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 13 Candy
-def test_register_Candy():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "candy@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Candy"
-                    }
-            )
+# #! USER 13 Candy
+# def test_register_Candy():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "candy@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Candy"
+#                     }
+#             )
 
 
-def getToken_Candy():
-    response = client.post("/login/", data={"username":"candy@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Candy():
+#     response = client.post("/login/", data={"username":"candy@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 14 Denis
-def test_register_Denis():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "denis@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Denis"
-                    }
-            )
+# #! USER 14 Denis
+# def test_register_Denis():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "denis@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Denis"
+#                     }
+#             )
 
 
-def getToken_Denis():
-    response = client.post("/login/", data={"username":"denis@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Denis():
+#     response = client.post("/login/", data={"username":"denis@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 15 Ember
-def test_register_Ember():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "ember@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Ember"
-                    }
-            )
+# #! USER 15 Ember
+# def test_register_Ember():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "ember@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Ember"
+#                     }
+#             )
 
 
-def getToken_Ember():
-    response = client.post("/login/", data={"username":"ember@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Ember():
+#     response = client.post("/login/", data={"username":"ember@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 16 Fiora
-def test_register_Fiora():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "fiora@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Fiora"
-                    }
-            )
+# #! USER 16 Fiora
+# def test_register_Fiora():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "fiora@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Fiora"
+#                     }
+#             )
 
 
-def getToken_Fiora():
-    response = client.post("/login/", data={"username":"fiora@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Fiora():
+#     response = client.post("/login/", data={"username":"fiora@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 17 Gian
-def test_register_Gian():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "gian@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Gian"
-                    }
-            )
+# #! USER 17 Gian
+# def test_register_Gian():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "gian@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Gian"
+#                     }
+#             )
 
 
-def getToken_Gian():
-    response = client.post("/login/", data={"username":"gian@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Gian():
+#     response = client.post("/login/", data={"username":"gian@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 18 Hyal
-def test_register_Hyal():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "hyal@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Hyal"
-                    }
-            )
+# #! USER 18 Hyal
+# def test_register_Hyal():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "hyal@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Hyal"
+#                     }
+#             )
 
-def getToken_Hyal():
-    response = client.post("/login/", data={"username":"hyal@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-#! USER 19 Innes
-def test_register_Innes():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "innes@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Innes"
-                    }
-            )
-
-def getToken_Innes():
-    response = client.post("/login/", data={"username":"innes@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Hyal():
+#     response = client.post("/login/", data={"username":"hyal@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 20 Jeep
-def test_register_Jeep():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "jeep@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Jeep"
-                    }
-            )
+# #! USER 19 Innes
+# def test_register_Innes():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "innes@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Innes"
+#                     }
+#             )
 
-def getToken_Jeep():
-    response = client.post("/login/", data={"username":"jeep@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-#! USER 21 Kahu
-def test_register_Kahu():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "kahu@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Kahu"
-                    }
-            )
-
-def getToken_Kahu():
-    response = client.post("/login/", data={"username":"kahu@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Innes():
+#     response = client.post("/login/", data={"username":"innes@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 22 Lyan
-def test_register_Lyan():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "lyan@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Lyan"
-                    }
-            )
+# #! USER 20 Jeep
+# def test_register_Jeep():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "jeep@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Jeep"
+#                     }
+#             )
 
-def getToken_Lyan():
-    response = client.post("/login/", data={"username":"lyan@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-#! USER 23 Moon
-def test_register_Moon():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "moon@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Moon"
-                    }
-            )
-
-def getToken_Moon():
-    response = client.post("/login/", data={"username":"moon@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Jeep():
+#     response = client.post("/login/", data={"username":"jeep@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 24 Nyuku
-def test_register_Nyuku():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "nyuku@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Nyuku"
-                    }
-            )
+# #! USER 21 Kahu
+# def test_register_Kahu():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "kahu@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Kahu"
+#                     }
+#             )
 
-def getToken_Nyuku():
-    response = client.post("/login/", data={"username":"nyuku@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
-
-
-#! USER 25 Oveja_Oscar
-def test_register_Oveja_Oscar():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "oveja_oscar@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Oveja_Oscar"
-                    }
-            )
-
-def getToken_Oveja_Oscar():
-    response = client.post("/login/", data={"username":"oveja_oscar@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Kahu():
+#     response = client.post("/login/", data={"username":"kahu@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 26 Piumpium
-def test_register_Piumpium():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "piumpium@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Piumpium"
-                    }
-            )
+# #! USER 22 Lyan
+# def test_register_Lyan():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "lyan@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Lyan"
+#                     }
+#             )
 
-def getToken_Piumpium():
-    response = client.post("/login/", data={"username":"piumpium@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Lyan():
+#     response = client.post("/login/", data={"username":"lyan@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 
 
-#! USER 27 Qhuy
-def test_register_Qhuy():
-    client.post(
-            "/users/",
-             json = { 
-                    "userIn_email": "qhuy@gmail.com", 
-                    "userIn_password": "12345678", 
-                    "userIn_username": "Qhuy"
-                    }
-            )
+# #! USER 23 Moon
+# def test_register_Moon():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "moon@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Moon"
+#                     }
+#             )
 
-def getToken_Qhuy():
-    response = client.post("/login/", data={"username":"qhuy@gmail.com", "password":"12345678" })
-    token = "Bearer " + response.json()["access_token"]
-    return token
+# def getToken_Moon():
+#     response = client.post("/login/", data={"username":"moon@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
+
+
+# #! USER 24 Nyuku
+# def test_register_Nyuku():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "nyuku@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Nyuku"
+#                     }
+#             )
+
+# def getToken_Nyuku():
+#     response = client.post("/login/", data={"username":"nyuku@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
+
+
+# #! USER 25 Oveja_Oscar
+# def test_register_Oveja_Oscar():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "oveja_oscar@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Oveja_Oscar"
+#                     }
+#             )
+
+# def getToken_Oveja_Oscar():
+#     response = client.post("/login/", data={"username":"oveja_oscar@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
+
+
+# #! USER 26 Piumpium
+# def test_register_Piumpium():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "piumpium@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Piumpium"
+#                     }
+#             )
+
+# def getToken_Piumpium():
+#     response = client.post("/login/", data={"username":"piumpium@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
+
+
+# #! USER 27 Qhuy
+# def test_register_Qhuy():
+#     client.post(
+#             "/users/",
+#              json = { 
+#                     "userIn_email": "qhuy@gmail.com", 
+#                     "userIn_password": "12345678", 
+#                     "userIn_username": "Qhuy"
+#                     }
+#             )
+
+# def getToken_Qhuy():
+#     response = client.post("/login/", data={"username":"qhuy@gmail.com", "password":"12345678" })
+#     token = "Bearer " + response.json()["access_token"]
+#     return token
 """
 
 #! USER 28

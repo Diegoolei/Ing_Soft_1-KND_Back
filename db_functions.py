@@ -439,6 +439,27 @@ def get_relative_game_information(user_id: int, game_id: int):
 
 
 @db_session
+def get_game_step_turn(game_id: int):
+    return dbe.Game[game_id].game_step_turn
+
+
+@db_session
+def set_game_step_turn(step_turn: str, game_id: int):
+    """
+    step_turn: START_GAME, START_TURN, SELECT_CANDIDATE_ENDED, VOTATION_ENDED_OK, VOTATION_ENDED_NO, DISCARD_ENDED, POST_PROCLAMATION_ENDED
+    
+    if the step_turn are not correct, the function don't change the db
+    """
+    if(step_turn == "START_GAME" or 
+        step_turn == "START_TURN" or 
+        step_turn == "SELECT_CANDIDATE_ENDED" or 
+        step_turn == "VOTATION_ENDED_OK" or
+        step_turn == "VOTATION_ENDED_NO" or
+        step_turn == "DISCARD_ENDED" or
+        step_turn == "POST_PROCLAMATION_ENDED"):
+        dbe.Game[game_id].game_step_turn = step_turn
+
+@db_session
 def get_dead_players(game_id: int):
     players_in_game= dbe.Game[game_id].game_players
     total_dead= 0
@@ -885,48 +906,54 @@ def select_director(player_id: int, player_number: int, game_id: int):
     # New director
     dbe.Game[game_id].game_last_director = player_number
     dbe.Player[player_id].player_director = True
-    dbe.Player[player_id].player_is_candidate = False #! FIXME Remove
+    dbe.Player[player_id].player_is_candidate = False
 
 
 @db_session
 def clean_director(player_id: int, game_id: int):
     dbe.Game[game_id].game_last_director = -1
     dbe.Player[player_id].player_director = False
-    dbe.Player[player_id].player_is_candidate = False #! FIXME ¿Remove?
+    dbe.Player[player_id].player_is_candidate = False
 
+
+@db_session
+def clean_director_candidate(game_id: int):
+    actual_candidate = dbe.Game[game_id].game_candidate_director
+    dbe.Player[actual_candidate].player_is_candidate = False
+    dbe.Game[game_id].game_candidate_director = -1
+    
     
 @db_session
 def set_next_minister_failed_election(game_id: int):
     """
     Called when the election has failed
     """
-    game_total_players= get_game_total_players(game_id)
+    game_total_players = get_game_total_players(game_id)
 
-    # Old Minister
+    # Old minister
     actual_minister = dbe.Game[game_id].game_actual_minister
 
     player_number_old_minister = dbe.Game[game_id].game_last_minister
     if player_number_old_minister != -1:
         player_id_old_minister = get_player_id_by_player_number(player_number_old_minister, game_id)
-        dbe.Player[player_id_old_minister].player_minister = False # The old Minister now is not the Minister
+        dbe.Player[player_id_old_minister].player_minister = False 
 
-    dbe.Game[game_id].game_last_minister = actual_minister # Save actual minister to last minister
-    
     # New actual_minister
     dbe.Game[game_id].game_actual_minister += 1
     if ((dbe.Game[game_id].game_actual_minister) >= (game_total_players)): # Reset 
         dbe.Game[game_id].game_actual_minister = 0
 
-    actual_minister = dbe.Game[game_id].game_actual_minister # Get the new Minister
+    actual_minister = dbe.Game[game_id].game_actual_minister
+    
     actual_minister_id = get_player_id_by_player_number(actual_minister, game_id)
-
-    while not (is_player_alive(actual_minister_id)): # Checks if the Player who is Minister is alive
+    while not (is_player_alive(actual_minister_id)): # Checks if the Player by player_id is alive
         dbe.Game[game_id].game_actual_minister += 1 # OK
 
         if ((dbe.Game[game_id].game_actual_minister) >= (game_total_players)): # Reset    
             dbe.Game[game_id].game_actual_minister = 0
 
         actual_minister = dbe.Game[game_id].game_actual_minister
+
         actual_minister_id = get_player_id_by_player_number(actual_minister, game_id) 
         
     dbe.Player[actual_minister_id].player_minister = True
@@ -1029,6 +1056,33 @@ def reset_votes(game_id: int):
 
 
 @db_session
+def reset_total_votes_game(game_id: int):
+    """
+    Reset game_votes and game_status_vote on db
+    """
+    dbe.Game[game_id].game_status_vote = 0
+    dbe.Game[game_id].game_votes = 0
+
+
+@db_session
+def set_candidate_director(player_number: int, game_id: int):
+    dbe.Game[game_id].game_candidate_director = player_number
+
+
+@db_session
+def is_director_candidate_set(game_id: int):
+    """
+    Returns True if the candidate is set
+
+    False if is not set
+    """
+    if(dbe.Game[game_id].game_candidate_director == -1):
+        return False
+    else:
+        return True
+
+
+@db_session
 def reset_candidate(player_id: int, game_id: int):
     dbe.Game[game_id].game_candidate_director = -1
     dbe.Game[game_id].game_status_vote = 0
@@ -1088,7 +1142,7 @@ def getFirstCardFromDeck(deckTry: list):
     Returns the first card of the deck
     """
     card = deckTry[0]
-    removeCard(deckTry)
+    #removeCard(deckTry)
     return card
 
 
