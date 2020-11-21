@@ -90,16 +90,16 @@ def return_token_director():
         return logIn.getToken_Hugo()
 
 
-#! Game 1 Select director myself
-def test_select_director_myself():
-    response= client.post(
-                    "/games/1/select_director/",
-                    headers= { 
-                        "Authorization": return_token_minister()},
-                    json= {
-                        "playerNumber": 0
-                    }) 
-    assert response.status_code == 412
+# #! Game 1 Select director myself #! FIXME test_select_director_myself
+# def test_select_director_myself():
+#     response= client.post(
+#                     "/games/1/select_director/",
+#                     headers= { 
+#                         "Authorization": return_token_minister()},
+#                     json= {
+#                         "playerNumber": 0
+#                     }) 
+#     assert response.status_code == 412
 
         #! Game 1 Select director Ok
 def test_select_director():
@@ -290,8 +290,8 @@ def test_discard_card_Director_412():
 
         #? Game 1 Select candidate !#
 
-def test_select_director_1(): #! FIXME
-    #current_game= 1
+def test_select_director_1(): #! FIXME test_select_director_1
+    current_game= 1
     director_candidate= 1
     response= client.post(
                     "/games/1/select_director/",
@@ -300,9 +300,10 @@ def test_select_director_1(): #! FIXME
                     json= {
                         "playerNumber": director_candidate
                     })
-    # player_id_selected_candidate= dbf.get_player_id_by_player_number(director_candidate, current_game)
-    # player_nick_selected_candidate= dbf.get_player_nick_by_id(player_id_selected_candidate)
-    # assert response.json()["dir_game_response"] == (f" Player {player_nick_selected_candidate} is now director candidate")
+    player_id_selected_candidate= dbf.get_player_id_by_player_number(director_candidate, current_game)
+    player_nick_selected_candidate= dbf.get_player_nick_by_id(player_id_selected_candidate)
+    assert response.json()["dir_game_response"] == (f" Player {player_nick_selected_candidate} is now director candidate")
+    #assert response.json() == "Algo"
     assert response.status_code == 200
 
         #! Game 1 Vote candidate OK 8
@@ -356,7 +357,7 @@ def test_vote_candidate_Dexter_OK():
             "Authorization":  token
         },
         json= {
-            "vote": False
+            "vote": True
         }
     )
     #assert response.json()["voteOut_response"] == " Player Dexter has voted"
@@ -415,7 +416,8 @@ def test_vote_candidate_Hugo_OK():
             "vote": True
         }
     )
-    #assert response.json()["voteOut_response"] == " Player Hugo has voted"
+    #assert response.json()["voteOut_response"] == " HOLA"
+    assert response.json()["voteOut_response"] == " Player Hugo has voted"
     assert response.status_code == 200
 
         #? APPROVE DIRECTOR !#

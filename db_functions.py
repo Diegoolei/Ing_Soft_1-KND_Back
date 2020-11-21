@@ -1054,9 +1054,36 @@ def reset_votes(game_id: int):
 
 
 @db_session
+def reset_game_status_votes(game_id: int):
+    """
+    Reset game_status_votes on db of the game
+
+    game_status_votes: Result votes [5 OK] [5 No]
+    """
+    dbe.Game[game_id].game_status_vote = 0
+
+
+@db_session
+def reset_game_votes(game_id: int):
+    """
+    Reset game_votes on db of the game
+    
+    game_votes: Count players who have voted
+    """
+    dbe.Game[game_id].game_votes = 0
+
+
+@db_session #! REVIEW
+def reset_candidate_fail_election(player_id: int, game_id: int):
+    actual_minister = dbe.Game[game_id].game_last_minister
+    dbe.Game[game_id].game_last_minister = actual_minister + 1 
+    dbe.Game[game_id].game_candidate_director = -1
+    dbe.Player[player_id].player_is_candidate = False
+
+
+@db_session #! FIXME
 def reset_candidate(player_id: int, game_id: int):
     dbe.Game[game_id].game_candidate_director = -1
-    dbe.Game[game_id].game_status_vote = 0
     dbe.Player[player_id].player_is_candidate = False
 
 
