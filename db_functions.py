@@ -920,6 +920,14 @@ def clean_director(player_id: int, game_id: int):
 def clean_director_candidate(game_id: int):
     actual_candidate = dbe.Game[game_id].game_candidate_director
     dbe.Player[actual_candidate].player_is_candidate = False
+    dbe.Game[game_id].game_candidate_director = -1 # Reset candidate db on GAME
+
+
+
+@db_session
+def clean_director_candidate2(game_id: int):
+    actual_candidate = dbe.Game[game_id].game_candidate_director
+    dbe.Player[actual_candidate].player_is_candidate = False
     dbe.Game[game_id].game_candidate_director = -1
     
     

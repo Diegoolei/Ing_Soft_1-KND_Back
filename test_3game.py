@@ -235,6 +235,7 @@ def test_vote_candidate_Hugo(): #! FIXME
 
 #?##################### NEW TURN #############################
 
+#? PORQUE DEJA VOTAR CANDIDATO SI SE SUPONE QUE NO DEBE HABER UNO!!!!
 #! Try to vote with candidate without candidate
 def test_vote_candidate_412(): #! FIXME
     token= return_token_NOT_minister()
@@ -317,8 +318,8 @@ def test_vote_candidate_Argentina_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Argentina has voted"
+    assert response.status_code == 200
 
 def test_vote_candidate_Brasil_OK():
     token= logIn.getToken_Brasil()
@@ -331,8 +332,8 @@ def test_vote_candidate_Brasil_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Brasil has voted"
+    assert response.status_code == 200
 
 def test_vote_candidate_Carol_OK():
     token= logIn.getToken_Carol()
@@ -345,9 +346,9 @@ def test_vote_candidate_Carol_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Carol has voted"
-
+    assert response.status_code == 200
+    
 def test_vote_candidate_Dexter_OK():
     token= logIn.getToken_Dexter()
     response= client.put(
@@ -359,8 +360,8 @@ def test_vote_candidate_Dexter_OK():
             "vote": False
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Dexter has voted"
+    assert response.status_code == 200   
 
 def test_vote_candidate_Esteban_quito_OK():
     token= logIn.getToken_Esteban_quito()
@@ -387,8 +388,8 @@ def test_vote_candidate_FaMAF_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player FaMAF has voted"
+    assert response.status_code == 200
 
 def test_vote_candidate_Ganzua_OK():
     token= logIn.getToken_Ganzua()
@@ -401,8 +402,8 @@ def test_vote_candidate_Ganzua_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Ganzua has voted"
+    assert response.status_code == 200   
 
 def test_vote_candidate_Hugo_OK():
     token= logIn.getToken_Hugo()
@@ -415,25 +416,25 @@ def test_vote_candidate_Hugo_OK():
             "vote": True
         }
     )
-    assert response.status_code == 200
     assert response.json()["voteOut_response"] == " Player Hugo has voted"
+    assert response.status_code == 200
 
         #? APPROVE DIRECTOR !#
 
 #! Game 1 Discard card OK
-#! Minister
-def test_discard_card_Minister():
-    response= client.put(
-        "/games/1/discard_card/",
-        headers= {
-            "Authorization": return_token_minister()
-        },
-        json= {
-            "card_discarted": 1
-        }
-    )
-    assert response.json()["detail"] == " Player Hugo has voted"
-    assert response.status_code == 200
+# #! Minister
+# def test_discard_card_Minister():
+#     response= client.put(
+#         "/games/1/discard_card/",
+#         headers= {
+#             "Authorization": return_token_minister()
+#         },
+#         json= {
+#             "card_discarted": 1
+#         }
+#     )
+#     assert response.json()["detail"] == " Player Hugo has voted"
+#     assert response.status_code == 200
 
 # #! Director
 # def test_discard_card_Director():
