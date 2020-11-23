@@ -91,15 +91,15 @@ def return_token_director():
 
 
 # #! Game 1 Select director myself #! FIXME test_select_director_myself
-# def test_select_director_myself():
-#     response= client.post(
-#                     "/games/1/select_director/",
-#                     headers= { 
-#                         "Authorization": return_token_minister()},
-#                     json= {
-#                         "playerNumber": 0
-#                     }) 
-#     assert response.status_code == 412
+def test_select_director_myself():
+    response= client.post(
+                    "/games/1/select_director/",
+                    headers= { 
+                        "Authorization": return_token_minister()},
+                    json= {
+                        "playerNumber": 0
+                    }) 
+    assert response.status_code == 412
 
         #! Game 1 Select director Ok
 def test_select_director():
@@ -292,7 +292,7 @@ def test_discard_card_Director_412():
 
 def test_select_director_1(): #! FIXME test_select_director_1
     current_game= 1
-    director_candidate= 1
+    director_candidate= 2
     response= client.post(
                     "/games/1/select_director/",
                     headers= { 

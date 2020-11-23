@@ -490,38 +490,76 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
             (f" You are not the minister")
         )
 
-    #TODO Uncomment
-    # step_turn= dbf.get_game_step_turn(game_id)
-    # actual_minister= dbf.get_actual_minister(game_id)
-    # if(("START_GAME" == step_turn) and (actual_minister != 0)):
-    #     raise_exception(
-    #         status.HTTP_412_PRECONDITION_FAILED,
-    #         " You are not in the stage of the corresponding turn."
-    #     )
+    #! REVIEW step_turn exception
+    step_turn= dbf.get_game_step_turn(game_id)
+    if(("START_GAME" == step_turn) or ("POST_PROCLAMATION_ENDED" == step_turn) or ("VOTATION_ENDED_NO" == step_turn)):
+        print("Step_turn START_GAME")
+        #! Parte 1
+        game_players = dbf.get_game_total_players(game_id)
+        if not (0 <= player_number.playerNumber < game_players):  # player_number
+            raise_exception(
+                status.HTTP_412_PRECONDITION_FAILED,
+                (f" Player number {player_number} is not between the expected number (0 to {game_players})")
+            )
 
-    # if(("START_GAME" != step_turn) and ("START_TURN" != step_turn)):
-    #     raise_exception(
-    #         status.HTTP_412_PRECONDITION_FAILED,
-    #         " You are not in the stage of the corresponding turn."
-    #     )
+        player_id = dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
+        player_nick = dbf.get_player_nick_by_id(player_id)
 
-    game_players = dbf.get_game_total_players(game_id)
-    if not (0 <= player_number.playerNumber < game_players):  # player_number
+        player_is_alive = dbf.is_player_alive(player_id)
+        if not player_is_alive:
+            raise_exception(
+                status.HTTP_412_PRECONDITION_FAILED,
+                (f" Player {player_nick} can't be selected as director candidate, {player_nick} is dead")
+            )
+
+        #! Parte 1.2
+        can_player_be_director = dbf.can_player_be_director(
+            player_number.playerNumber, game_id)
+        if can_player_be_director: #! FIXME FAILED test_3game.py::test_select_director_1 - assert {'detail': " Player Argentina can't be selected as director candidate because is the acutal mi...
+            raise_exception(
+                status.HTTP_412_PRECONDITION_FAILED,
+                (f" Player {player_nick} can't be selected as director candidate because is the acutal minister, or was selected as minister or director in the last turn")
+            )
+
+        #! Parte 2
+        dbf.select_candidate(player_id, player_number.playerNumber, game_id)
+
+        #dbf.reset_votes(game_id)
+
+        dbf.set_game_step_turn("SELECT_CANDIDATE_ENDED", game_id) # Set step_turn
+
+        candidate_id= dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
+        candidate_nick= dbf.get_player_nick_by_id(candidate_id)
+        socketDict= { "TYPE": "REQUEST_VOTE", "PAYLOAD": candidate_nick }
+        await wsManager.broadcastInGame(game_id, socketDict)
+    else:
         raise_exception(
             status.HTTP_412_PRECONDITION_FAILED,
-            (f" Player number {player_number} is not between the expected number (0 to {game_players})")
+            " Step turn is not START_GAME or POST_PROCLAMATION_ENDED. You are not in the stage of the corresponding turn."
         )
+        
+    #! Parte 1
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
+    # game_players = dbf.get_game_total_players(game_id)
+    # if not (0 <= player_number.playerNumber < game_players):  # player_number
+    #     raise_exception(
+    #         status.HTTP_412_PRECONDITION_FAILED,
+    #         (f" Player number {player_number} is not between the expected number (0 to {game_players})")
+    #     )
 
-    player_id = dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
-    player_nick = dbf.get_player_nick_by_id(player_id)
+    # player_id = dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
+    # player_nick = dbf.get_player_nick_by_id(player_id)
 
-    player_is_alive = dbf.is_player_alive(player_id)
-    if not player_is_alive:
-        raise_exception(
-            status.HTTP_412_PRECONDITION_FAILED,
-            (f" Player {player_nick} can't be selected as director candidate, {player_nick} is dead")
-        )
+    # player_is_alive = dbf.is_player_alive(player_id)
+    # if not player_is_alive:
+    #     raise_exception(
+    #         status.HTTP_412_PRECONDITION_FAILED,
+    #         (f" Player {player_nick} can't be selected as director candidate, {player_nick} is dead")
+    #     )
+    #! Fin
 
+    #! Parte 1.2
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
     # can_player_be_director = dbf.can_player_be_director(
     #     player_number.playerNumber, game_id)
     # if can_player_be_director: #! FIXME FAILED test_3game.py::test_select_director_1 - assert {'detail': " Player Argentina can't be selected as director candidate because is the acutal mi...
@@ -529,6 +567,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #         status.HTTP_412_PRECONDITION_FAILED,
     #         (f" Player {player_nick} can't be selected as director candidate because is the acutal minister, or was selected as minister or director in the last turn")
     #     )
+    #! Finx
     
     # if not (dbf.expeliarmus_state(game_id) == 0):
     #     raise_exception(
@@ -550,16 +589,19 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #             " You can not do this while expeliarmus stage is active"
     #         )
 
-    dbf.select_candidate(player_id, player_number.playerNumber, game_id)
+    #! Parte 2
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
+    # dbf.select_candidate(player_id, player_number.playerNumber, game_id)
 
-    #dbf.reset_votes(game_id)
+    # #dbf.reset_votes(game_id)
 
-    dbf.set_game_step_turn("SELECT_CANDIDATE_ENDED", game_id) # Set step_turn
+    # dbf.set_game_step_turn("SELECT_CANDIDATE_ENDED", game_id) # Set step_turn
 
-    candidate_id= dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
-    candidate_nick= dbf.get_player_nick_by_id(candidate_id)
-    socketDict= { "TYPE": "REQUEST_VOTE", "PAYLOAD": candidate_nick }
-    #await wsManager.broadcastInGame(game_id, socketDict)
+    # candidate_id= dbf.get_player_id_by_player_number(player_number.playerNumber, game_id)
+    # candidate_nick= dbf.get_player_nick_by_id(candidate_id)
+    # socketDict= { "TYPE": "REQUEST_VOTE", "PAYLOAD": candidate_nick }
+    # #await wsManager.broadcastInGame(game_id, socketDict)
+    #! Fin
 
     return md.SelectMYDirector(
         dir_player_number=player_number.playerNumber,
@@ -621,10 +663,8 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
 
     total_players_alive_in_game = total_players_in_game - (dbf.get_dead_players(game_id))
     
-    #! FIXME Hugo
     is_vote_player = dbf.check_has_voted(player_id) # TRUE
-    if ((actual_votes == total_players_alive_in_game) and (is_vote_player)): #! FIXME
-        print(f"IF total votes!")
+    if ((actual_votes == total_players_alive_in_game) and (is_vote_player)):
         status_votes = dbf.get_status_vote(game_id)
         actual_candidate = dbf.get_game_candidate_director(game_id)
         player_id_candidate = dbf.get_player_id_by_player_number(actual_candidate, game_id)
@@ -652,15 +692,11 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             }
             await wsManager.sendMessage(player_id_candidate, socketDic)
         else:
-            print(" Failed Election...") #! FIXME
-            dbf.reset_candidate_fail_election(player_id_candidate, game_id) # Reset candidate
-            #dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
+            print(" Failed Election...")
             dbf.reset_votes(game_id) # Reset votes
             dbf.reset_game_status_votes(game_id) # Reset status votes on game
             dbf.reset_game_votes(game_id) # Reset game votes on game
             dbf.set_game_step_turn("VOTATION_ENDED_NO", game_id) # Set step_turn
-            step_turn2 = dbf.get_game_step_turn(game_id)
-            print(f"election failed -> step_turn2 {step_turn2}")
             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
             dbf.set_next_minister_failed_election(game_id)
 
@@ -1020,7 +1056,7 @@ async def post_proclamation(
                 socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }
                 await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-    dbf.set_game_step_turn("POST_PROCLAMATION_ENDED", game_id) # Set step_turn
+    dbf.set_game_step_turn("POST_PROCLAMATION_ENDED", game_id) # Set step_turn #! REVIEW step_turn
 
     return md.ViewBoard(
         board_promulged_fenix=board[0],

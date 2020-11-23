@@ -855,6 +855,10 @@ def select_candidate(player_id: int, player_number: int, game_id: int):
 def get_game_candidate_director(game_id: int):
     return dbe.Game[game_id].game_candidate_director
 
+@db_session
+def get_game_last_minister(game_id: int):
+    return dbe.Game[game_id].game_last_minister
+
 
 @db_session
 def check_has_voted(player_id: int):
@@ -919,6 +923,19 @@ def clean_director(player_id: int, game_id: int):
     dbe.Player[player_id].player_director = False
     dbe.Player[player_id].player_is_candidate = False #! FIXME ¿Remove?
 
+
+# @db_session #! REVIEW
+# def reset_candidate_fail_election(player_id: int, game_id: int):
+#     actual_minister = dbe.Game[game_id].game_last_minister
+#     dbe.Game[game_id].game_last_minister = actual_minister + 1 
+#     dbe.Game[game_id].game_candidate_director = -1
+#     dbe.Player[player_id].player_is_candidate = False
+
+
+# @db_session
+# def set_next_minister_failed_election(game_id: int):
+
+
     
 @db_session
 def set_next_minister_failed_election(game_id: int):
@@ -935,7 +952,8 @@ def set_next_minister_failed_election(game_id: int):
         player_id_old_minister = get_player_id_by_player_number(player_number_old_minister, game_id)
         dbe.Player[player_id_old_minister].player_minister = False # The old Minister now is not the Minister
 
-    dbe.Game[game_id].game_last_minister = actual_minister # Save actual minister to last minister
+    id_actual_minister = get_player_id_by_player_number(actual_minister, game_id)
+    dbe.Player[id_actual_minister].player_minister = False # The old Minister now is not the Minister
     
     # New actual_minister
     dbe.Game[game_id].game_actual_minister += 1
@@ -1071,14 +1089,6 @@ def reset_game_votes(game_id: int):
     game_votes: Count players who have voted
     """
     dbe.Game[game_id].game_votes = 0
-
-
-@db_session #! REVIEW
-def reset_candidate_fail_election(player_id: int, game_id: int):
-    actual_minister = dbe.Game[game_id].game_last_minister
-    dbe.Game[game_id].game_last_minister = actual_minister + 1 
-    dbe.Game[game_id].game_candidate_director = -1
-    dbe.Player[player_id].player_is_candidate = False
 
 
 @db_session #! FIXME
