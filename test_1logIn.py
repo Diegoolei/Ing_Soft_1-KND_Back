@@ -1,6 +1,6 @@
 import config
-#config.database = "test_data_base.sqlite"
-config.database = "data_base.sqlite"
+config.database = "test_data_base.sqlite"
+#config.database = "data_base.sqlite"
 
 from main import app
 from fastapi.testclient import TestClient
@@ -235,95 +235,95 @@ def getToken_Joker():
     token = "Bearer " + response.json()["access_token"]
     return token
 
-
-# #! USER 11 Amber
-# def test_register_Amber():
-#     client.post(
-#             "/users/",
-#              json = { 
-#                     "userIn_email": "amber@gmail.com", 
-#                     "userIn_password": "12345678", 
-#                     "userIn_username": "Amber"
-#                     }
-#             )
-
-
-# def getToken_():
-#     response = client.post("/login/", data={"username":"amber@gmail.com", "password":"12345678" })
-#     token = "Bearer " + response.json()["access_token"]
-#     return token
+#? GAME 2 #
+#! USER 11 Amber
+def test_register_Amber():
+    client.post(
+            "/users/",
+             json = { 
+                    "userIn_email": "amber@gmail.com", 
+                    "userIn_password": "12345678", 
+                    "userIn_username": "Amber"
+                    }
+            )
 
 
-# #! USER 12 Benny
-# def test_register_Benny():
-#     client.post(
-#             "/users/",
-#              json = { 
-#                     "userIn_email": "benny@gmail.com", 
-#                     "userIn_password": "12345678", 
-#                     "userIn_username": "Benny"
-#                     }
-#             )
+def getToken_Amber():
+    response = client.post("/login/", data={"username":"amber@gmail.com", "password":"12345678" })
+    token = "Bearer " + response.json()["access_token"]
+    return token
 
 
-# def getToken_Benny():
-#     response = client.post("/login/", data={"username":"benny@gmail.com", "password":"12345678" })
-#     token = "Bearer " + response.json()["access_token"]
-#     return token
+#! USER 12 Benny
+def test_register_Benny():
+    client.post(
+            "/users/",
+             json = { 
+                    "userIn_email": "benny@gmail.com", 
+                    "userIn_password": "12345678", 
+                    "userIn_username": "Benny"
+                    }
+            )
 
 
-# #! USER 13 Candy
-# def test_register_Candy():
-#     client.post(
-#             "/users/",
-#              json = { 
-#                     "userIn_email": "candy@gmail.com", 
-#                     "userIn_password": "12345678", 
-#                     "userIn_username": "Candy"
-#                     }
-#             )
+def getToken_Benny():
+    response = client.post("/login/", data={"username":"benny@gmail.com", "password":"12345678" })
+    token = "Bearer " + response.json()["access_token"]
+    return token
 
 
-# def getToken_Candy():
-#     response = client.post("/login/", data={"username":"candy@gmail.com", "password":"12345678" })
-#     token = "Bearer " + response.json()["access_token"]
-#     return token
+#! USER 13 Candy
+def test_register_Candy():
+    client.post(
+            "/users/",
+             json = { 
+                    "userIn_email": "candy@gmail.com", 
+                    "userIn_password": "12345678", 
+                    "userIn_username": "Candy"
+                    }
+            )
 
 
-# #! USER 14 Denis
-# def test_register_Denis():
-#     client.post(
-#             "/users/",
-#              json = { 
-#                     "userIn_email": "denis@gmail.com", 
-#                     "userIn_password": "12345678", 
-#                     "userIn_username": "Denis"
-#                     }
-#             )
+def getToken_Candy():
+    response = client.post("/login/", data={"username":"candy@gmail.com", "password":"12345678" })
+    token = "Bearer " + response.json()["access_token"]
+    return token
 
 
-# def getToken_Denis():
-#     response = client.post("/login/", data={"username":"denis@gmail.com", "password":"12345678" })
-#     token = "Bearer " + response.json()["access_token"]
-#     return token
+#! USER 14 Denis
+def test_register_Denis():
+    client.post(
+            "/users/",
+             json = { 
+                    "userIn_email": "denis@gmail.com", 
+                    "userIn_password": "12345678", 
+                    "userIn_username": "Denis"
+                    }
+            )
 
 
-# #! USER 15 Ember
-# def test_register_Ember():
-#     client.post(
-#             "/users/",
-#              json = { 
-#                     "userIn_email": "ember@gmail.com", 
-#                     "userIn_password": "12345678", 
-#                     "userIn_username": "Ember"
-#                     }
-#             )
+def getToken_Denis():
+    response = client.post("/login/", data={"username":"denis@gmail.com", "password":"12345678" })
+    token = "Bearer " + response.json()["access_token"]
+    return token
 
 
-# def getToken_Ember():
-#     response = client.post("/login/", data={"username":"ember@gmail.com", "password":"12345678" })
-#     token = "Bearer " + response.json()["access_token"]
-#     return token
+#! USER 15 Ember
+def test_register_Ember():
+    client.post(
+            "/users/",
+             json = { 
+                    "userIn_email": "ember@gmail.com", 
+                    "userIn_password": "12345678", 
+                    "userIn_username": "Ember"
+                    }
+            )
+
+
+def getToken_Ember():
+    response = client.post("/login/", data={"username":"ember@gmail.com", "password":"12345678" })
+    token = "Bearer " + response.json()["access_token"]
+    return token
 
 
 # #! USER 16 Fiora

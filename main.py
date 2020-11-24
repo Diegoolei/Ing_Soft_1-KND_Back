@@ -493,7 +493,6 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #! REVIEW step_turn exception
     step_turn= dbf.get_game_step_turn(game_id)
     if(("START_GAME" == step_turn) or ("POST_PROCLAMATION_ENDED" == step_turn) or ("VOTATION_ENDED_NO" == step_turn) or ("SPELL" == step_turn)):
-        print("Step_turn START_GAME")
         #! Parte 1
         game_players = dbf.get_game_total_players(game_id)
         if not (0 <= player_number.playerNumber < game_players):  # player_number
@@ -515,7 +514,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
         #! Parte 1.2
         can_player_be_director = dbf.can_player_be_director(
             player_number.playerNumber, game_id)
-        if can_player_be_director: #! FIXME FAILED test_3game.py::test_select_director_1 - assert {'detail': " Player Argentina can't be selected as director candidate because is the acutal mi...
+        if can_player_be_director:
             raise_exception(
                 status.HTTP_412_PRECONDITION_FAILED,
                 (f" Player {player_nick} can't be selected as director candidate because is the acutal minister, or was selected as minister or director in the last turn")
@@ -537,9 +536,10 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
             status.HTTP_412_PRECONDITION_FAILED,
             " Step turn is not START_GAME or POST_PROCLAMATION_ENDED. You are not in the stage of the corresponding turn."
         )
-        
+
+    #TODO @Diego, luego remover esto comentado y adaptarlo a como fue implementado arriba
     #! Parte 1
-    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN, no lo borro por @Diego
     # game_players = dbf.get_game_total_players(game_id)
     # if not (0 <= player_number.playerNumber < game_players):  # player_number
     #     raise_exception(
@@ -559,7 +559,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #! Fin
 
     #! Parte 1.2
-    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN, no lo borro por @Diego
     # can_player_be_director = dbf.can_player_be_director(
     #     player_number.playerNumber, game_id)
     # if can_player_be_director: #! FIXME FAILED test_3game.py::test_select_director_1 - assert {'detail': " Player Argentina can't be selected as director candidate because is the acutal mi...
@@ -569,6 +569,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #     )
     #! Finx
     
+    #! REVIEW @Diego
     # if not (dbf.expeliarmus_state(game_id) == 0):
     #     raise_exception(
     #             status.HTTP_409_CONFLICT,
@@ -590,7 +591,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
     #         )
 
     #! Parte 2
-    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN
+    #! REVIEW ESTO FUE METIDO AL IF DE STEP TURN, no lo borro por @Diego
     # dbf.select_candidate(player_id, player_number.playerNumber, game_id)
 
     # #dbf.reset_votes(game_id)
@@ -658,7 +659,7 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
     #             " You can not do this while expeliarmus stage is active"
     #         )
     
-    actual_votes = dbf.player_vote(vote_recive.vote, player_id, game_id) #! REVIEW Checks
+    actual_votes = dbf.player_vote(vote_recive.vote, player_id, game_id)
     total_players_in_game = dbf.get_game_total_players(game_id)
 
     total_players_alive_in_game = total_players_in_game - (dbf.get_dead_players(game_id))
@@ -700,6 +701,7 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
             dbf.set_next_minister_failed_election(game_id)
 
+            #! REVIEW @Diego, feature spells
             # if (dbf.is_imperius_active(game_id)):
             #     dbf.finish_imperius(game_id)
 
@@ -787,6 +789,7 @@ async def discard_card(cards: md.Card, game_id: int, user_id: int = Depends(auth
             (f" You are not in the game ({game_id})")
         )
 
+    #! REVIEW @Diego
     # if not (dbf.expeliarmus_state(game_id) == 0):
     #     raise_exception(
     #             status.HTTP_409_CONFLICT,
@@ -896,6 +899,7 @@ async def post_proclamation(
             " You are not the director"
         )
 
+    #! REVIEW @Diego
     # if not (dbf.expeliarmus_state(game_id) == 0):
     #     dbf.deactivate_expeliarmus(game_id)
 
@@ -914,8 +918,6 @@ async def post_proclamation(
     board = dbf.add_proclamation_card_on_board(
         promulged_card,
         game_id)  
-    
-    dbf.reset_failed_elections(game_id)
 
     # TODO Change for endgame
     if(board[0] >= 5): # Phoenixes win when they manage to post 5 of their proclamations
@@ -933,7 +935,7 @@ async def post_proclamation(
             " Free Dobby appears and congratulates the Phoenixes with a sock, hagrid is happy too ♥ Dracco Malfloy disturbs an Hippogriff peace, gets 'beaked' and cries"
         )
    
-    elif(board[1] >= 6):  # DE win when they manage to post 6 of their proclamations
+    elif(board[1] >= 6): # DE win when they manage to post 6 of their proclamations
         players = dbf.get_players_game(game_id) # [PLAYERS]
         result= {}
         for player in players:
@@ -964,39 +966,43 @@ async def post_proclamation(
     await wsManager.broadcastInGame(game_id, socketDic)
 
     if promulged_card:
-        dbf.set_next_minister(game_id) #! FIXME Checks
+        dbf.set_next_minister(game_id)
+        #! REVIEW @Diego
         # if (dbf.is_imperius_active(game_id)):
         #     dbf.finish_imperius(game_id)
     else:
+        dbf.set_next_minister(game_id) #! REVIEW @Diego Change for spells
         # Informs the minister what spell has to be casted (if any)
-        actual_spell = dbf.get_spell(game_id)
-        if (actual_spell != "No Spell"):   
-            # if (actual_spell == "Crucio"):
-            #     player_number_current_minister= dbf.get_actual_minister(game_id)
-            #     player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
-            #     socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "CRUCIO" }
-            #     await wsManager.sendMessage(player_id_current_minister, socketDict)
+        # actual_spell = dbf.get_spell(game_id)
+        # if (actual_spell != "No Spell"):   
+        #     if (actual_spell == "Crucio"):
+        #         player_number_current_minister= dbf.get_actual_minister(game_id)
+        #         player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
+        #         socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "CRUCIO" }
+        #         await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-            # elif (actual_spell == "Imperius"):
-            #     player_number_current_minister= dbf.get_actual_minister(game_id)
-            #     player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
-            #     socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "IMPERIUS" }
-            #     await wsManager.sendMessage(player_id_current_minister, socketDict)
+        #     elif (actual_spell == "Imperius"):
+        #         player_number_current_minister= dbf.get_actual_minister(game_id)
+        #         player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
+        #         socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "IMPERIUS" }
+        #         await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-            if (actual_spell == "Prophecy"):
-                player_number_current_minister= dbf.get_actual_minister(game_id)
-                player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
-                socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "ADIVINATION" }
-                await wsManager.sendMessage(player_id_current_minister, socketDict)
+        #     elif (actual_spell == "Prophecy"):
+        #         player_number_current_minister= dbf.get_actual_minister(game_id)
+        #         player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
+        #         socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "ADIVINATION" }
+        #         await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-            elif (actual_spell == "Avada Kedavra"): 
-                player_number_current_minister= dbf.get_actual_minister(game_id)
-                player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
-                socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }
-                await wsManager.sendMessage(player_id_current_minister, socketDict)
+        #     elif (actual_spell == "Avada Kedavra"): 
+        #         player_number_current_minister= dbf.get_actual_minister(game_id)
+        #         player_id_current_minister= dbf.get_player_id_by_player_number(player_number_current_minister, game_id)
+        #         socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }
+        #         await wsManager.sendMessage(player_id_current_minister, socketDict)
 
-    
-    dbf.set_game_step_turn("POST_PROCLAMATION_ENDED", game_id) # Set step_turn #! REVIEW step_turn
+    # Need reset old minister on db of the player (minor fix)
+    dbf.reset_old_minister_db_player(game_id)
+
+    dbf.set_game_step_turn("POST_PROCLAMATION_ENDED", game_id) # Set step_turn
 
     return md.ViewBoard(
         board_promulged_fenix=board[0],
@@ -1005,6 +1011,7 @@ async def post_proclamation(
     )
 
 
+#! REVIEW @Diego
 # @app.put(
 #     "/games/{game_id}/spell/expeliarmus",
 #     status_code=status.HTTP_200_OK,

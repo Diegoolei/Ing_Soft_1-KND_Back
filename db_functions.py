@@ -592,7 +592,7 @@ def get_actual_minister(game_id):
 @db_session
 def get_actual_director(game_id):
     """
-    Returns actual directors's player number
+    Returns actual directors's player number from players
     """
     players = dbe.Game[game_id].game_players
     for player in players:
@@ -649,8 +649,8 @@ def insert_game(gameModelObj: md.ViewGame, lobby_id: id) -> int:
     print(" Creating a new game from ViewGame...")
     game = dbe.Game(
               game_is_started = False, 
-              game_imperius = -1,
-              game_expeliarmus = 0,
+              game_imperius = gameModelObj.game_imperius,
+              game_expeliarmus = gameModelObj.game_expeliarmus,
               game_total_players = gameModelObj.game_total_players,
               game_actual_minister = gameModelObj.game_actual_minister, 
               game_failed_elections = gameModelObj.game_failed_elections, 
@@ -674,7 +674,6 @@ def insert_game(gameModelObj: md.ViewGame, lobby_id: id) -> int:
     flush()
     game_p = dbe.Game[game.game_id].game_players
     amount_of_players = len(game_p)
-    print(amount_of_players)
 
     # Select roles of the players
     select_roles(game.game_total_players, game_p) ## select_roles(game_total_players, game_p)
@@ -799,7 +798,8 @@ def set_game_step_turn(step_turn: str, game_id: int):
         step_turn == "VOTATION_ENDED_OK" or
         step_turn == "VOTATION_ENDED_NO" or
         step_turn == "DISCARD_ENDED" or
-        step_turn == "POST_PROCLAMATION_ENDED"):
+        step_turn == "POST_PROCLAMATION_ENDED" or
+        step_turn == "SPELL"):
         dbe.Game[game_id].game_step_turn = step_turn
     else:
         print(f" step_turn was not successfully set")
@@ -914,14 +914,14 @@ def select_director(player_id: int, player_number: int, game_id: int):
     # New director
     dbe.Game[game_id].game_last_director = player_number
     dbe.Player[player_id].player_director = True
-    dbe.Player[player_id].player_is_candidate = False #! FIXME Remove
+    dbe.Player[player_id].player_is_candidate = False
 
 
 @db_session
 def clean_director(player_id: int, game_id: int):
     dbe.Game[game_id].game_last_director = -1
     dbe.Player[player_id].player_director = False
-    dbe.Player[player_id].player_is_candidate = False #! FIXME ¿Remove?
+    dbe.Player[player_id].player_is_candidate = False
 
 
 # @db_session #! REVIEW
@@ -930,11 +930,6 @@ def clean_director(player_id: int, game_id: int):
 #     dbe.Game[game_id].game_last_minister = actual_minister + 1 
 #     dbe.Game[game_id].game_candidate_director = -1
 #     dbe.Player[player_id].player_is_candidate = False
-
-
-# @db_session
-# def set_next_minister_failed_election(game_id: int):
-
 
     
 @db_session
@@ -1093,10 +1088,17 @@ def reset_game_votes(game_id: int):
     dbe.Game[game_id].game_votes = 0
 
 
-@db_session #! FIXME
+@db_session
 def reset_candidate(player_id: int, game_id: int):
     dbe.Game[game_id].game_candidate_director = -1
     dbe.Player[player_id].player_is_candidate = False
+
+
+@db_session
+def reset_old_minister_db_player(game_id: int):
+    number_old_minister= dbe.Game[game_id].game_last_minister
+    id_old_minister= get_player_id_by_player_number(number_old_minister, game_id)
+    dbe.Player[id_old_minister].player_minister = False
 
 
 @db_session
@@ -1110,7 +1112,7 @@ def kill_player(player_id: int):
 
 @db_session
 def get_coded_deck(game_id: int):
-    print(dbe.Game[game_id].game_board.board_deck_codification)
+    # print(dbe.Game[game_id].game_board.board_deck_codification)
     return dbe.Game[game_id].game_board.board_deck_codification
 
 
@@ -1289,7 +1291,7 @@ def showDatabase(): # NO TOCAR
     print("\n---|Players|---\n(player_id, player_number, player_nick, player_nick_amount, player_role, player_is_alive, player_chat_blocked, player_is_candidate, player_has_voted, player_vote,player_director, player_minister, player_game, player_lobby, player_user)")
     dbe.Player.select().show()
     
-    print("\n---|Games|---\n(game_id, game_is_started, game_total_players, game_actual_minister, game_failed_elections, game_step_turn, game_candidate_director, game_votes, game_status_vote, game_last_director, game_last_minister, game_board)")
+    print("\n---|Games|---\n(game_id, game_is_started, game_imperius, game_expeliarmus, game_total_players, game_actual_minister, game_failed_elections, game_step_turn, game_candidate_director, game_votes, game_status_vote, game_last_director, game_last_minister, game_board)")
     dbe.Game.select().show()
     
     print("\n---|Boards|---\n(id, board_game, board_promulged_fenix, board_promulged_death_eater, board_deck_codification)")
