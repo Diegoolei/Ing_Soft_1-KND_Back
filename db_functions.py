@@ -1018,8 +1018,10 @@ def set_next_minister(game_id: int):
 
     player_number_old_minister = dbe.Game[game_id].game_last_minister
     if player_number_old_minister != -1:
-        player_id_old_minister = get_player_id_by_player_number(player_number_old_minister, game_id)
-        dbe.Player[player_id_old_minister].player_minister = False 
+    #     player_id_old_minister = get_player_id_by_player_number(player_number_old_minister, game_id)
+    #     dbe.Player[player_id_old_minister].player_minister = False 
+        id_actual_minister = get_player_id_by_player_number(actual_minister, game_id)
+        dbe.Player[id_actual_minister].player_minister = False # The old Minister now is not the Minister
     
     dbe.Game[game_id].game_last_minister = actual_minister # Save actual minister to last minister
 
@@ -1150,7 +1152,7 @@ def getFirstCardFromDeck(deckTry: list):
     Returns the first card of the deck
     """
     card = deckTry[0]
-    removeCard(deckTry)
+    #removeCard(deckTry)
     return card
 
 

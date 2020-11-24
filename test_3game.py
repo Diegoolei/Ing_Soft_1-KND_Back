@@ -423,51 +423,57 @@ def test_vote_candidate_Hugo_OK():
         #? APPROVE DIRECTOR !#
 
 #! Game 1 Discard card OK
-# #! Minister
-# def test_discard_card_Minister():
-#     response= client.put(
-#         "/games/1/discard_card/",
-#         headers= {
-#             "Authorization": return_token_minister()
-#         },
-#         json= {
-#             "card_discarted": 1
-#         }
-#     )
-#     assert response.json()["detail"] == " Player Hugo has voted"
-#     assert response.status_code == 200
+#! Minister
+def test_discard_card_Minister():
+    response= client.put(
+        "/games/1/discard_card/",
+        headers= {
+            "Authorization": return_token_minister()
+        },
+        json= {
+            "card_discarted": 1
+        }
+    )
+    # assert response.json()["detail"] == " Player Hugo has voted"
+    assert response.status_code == 200
 
-# #! Director
-# def test_discard_card_Director():
-#     response= client.put(
-#         "/games/1/discard_card/",
-#         headers= {
-#             "Authorization": return_token_director()
-#         },
-#         json= {
-#             "card_discarted": 1
-#         }
-#     )
-#     assert response.status_code == 200
-#     assert response.json()["voteOut_response"] == " Player Hugo has voted"
+#! Director
+def test_discard_card_Director():
+    response= client.put(
+        "/games/1/discard_card/",
+        headers= {
+            "Authorization": return_token_director()
+        },
+        json= {
+            "card_discarted": 1
+        }
+    )
+    assert response.status_code == 200
+    #board_response=" "
 
 # def return_first_card_on_deck():
 #     board_deck_decoded= dbf.get_decoded_deck(1)
 #     return dbf.getFirstCardFromDeck(board_deck_decoded)
 
-# #! Game 1 Post proclamation OK
-# def test_post_proclamation_1():
-#     response= client.put(
-#         "/games/1/proclamation/",
-#         headers= {
-#             "Authorization": return_token_director()
-#         },
-#         json= {
-#             "proclamationCard_phoenix": return_first_card_on_deck()
-#         }
-#     )
-#     assert response.status_code == 200
+#! Game 1 Post proclamation OK
+def test_post_proclamation_1():
+    response= client.put(
+        "/games/1/proclamation/",
+        headers= {
+            "Authorization": return_token_director()
+        },
+        # json= {
+        #     "proclamationCard_phoenix": return_first_card_on_deck()
+        # }
+    )
+    assert response.status_code == 200
+    assert response.json()["board_response"] == " Proclamation card was promulged correctly (ง'-'︠)ง ≧◉ᴥ◉≦"
 
+#! Game 1 Select Director 2
+# if 5f or 6m:
+#     asdafaf
+# assert end game
+# proclamo 5
 #! Game 1 Spell Avada Kedavra
 
 #! Game 1 Spell Prophecy

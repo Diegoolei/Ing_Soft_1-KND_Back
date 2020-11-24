@@ -492,7 +492,7 @@ async def select_director(player_number: md.PlayerNumber, game_id: int, user_id:
 
     #! REVIEW step_turn exception
     step_turn= dbf.get_game_step_turn(game_id)
-    if(("START_GAME" == step_turn) or ("POST_PROCLAMATION_ENDED" == step_turn) or ("VOTATION_ENDED_NO" == step_turn)):
+    if(("START_GAME" == step_turn) or ("POST_PROCLAMATION_ENDED" == step_turn) or ("VOTATION_ENDED_NO" == step_turn) or ("SPELL" == step_turn)):
         print("Step_turn START_GAME")
         #! Parte 1
         game_players = dbf.get_game_total_players(game_id)
@@ -767,75 +767,6 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
     )
 
 
-# @app.put(
-#     "/games/{game_id}/select_director/vote/",
-#     status_code=status.HTTP_200_OK,
-#     response_model=md.VoteOut
-# )
-# async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.get_current_active_user)):
-#     player_id = dbf.get_player_id_from_game(user_id, game_id)
-#     player_nick = dbf.get_player_nick_by_id(player_id)
-    
-#     is_user_in_game = dbf.is_user_in_game(user_id, game_id)
-#     if not is_user_in_game:
-#         raise_exception(
-#             status.HTTP_412_PRECONDITION_FAILED,
-#             (f" You are not in the game you selected ({game_id})")
-#         )
-
-#     is_player_alive = dbf.is_player_alive(player_id)
-#     if not is_player_alive:
-#         raise_exception(
-#             status.HTTP_412_PRECONDITION_FAILED,
-#             (f" You are dead in the game ({game_id}), you can't vote")
-#         )
-
-#     actual_vote= dbf.check_has_voted(player_id)
-#     if actual_vote:
-#         raise_exception(
-#             status.HTTP_412_PRECONDITION_FAILED,
-#             (f" You have already voted in the game ({game_id}), you can't vote more than 2 times")
-#         )
-    
-#     actual_votes = dbf.player_vote(vote_recive.vote, player_id, game_id)
-#     total_players_alive_in_game = dbf.get_game_total_players(game_id)
-#     total_players_alive_in_game = total_players_alive_in_game - (dbf.get_dead_players(game_id))
-
-#     if (actual_votes == total_players_alive_in_game):
-#         status_votes = dbf.get_status_vote(game_id)
-#         actual_candidate = dbf.get_game_candidate_director(game_id)
-#         player_id_candidate = dbf.get_player_id_by_player_number(actual_candidate, game_id)
-
-#         dict1 = dict()
-#         for player in dbf.get_players_game(game_id):
-#             dict1[player.player_nick] = player.player_vote
-#         dic2={ "TYPE": "ELECTION_RESULT", "PAYLOAD": dict1 }
-#         await wsManager.broadcastInGame(game_id, dic2)
-
-#         dbf.reset_candidate(player_id_candidate, game_id) # Reset candidate
-#         dbf.reset_votes(game_id) # Reset votes
-#         if(status_votes > 0): # Acepted candidate
-#             print(" Successful Election...")
-#             dbf.select_director(player_id_candidate, actual_candidate, game_id)
-#             # Get 3 cards
-#             model_list = dbf.get_three_cards(game_id)
-#             # Pass 3 cards as str #[card1, card2, card3] (list of 3 str) 
-#             socket_list = list(model_list.prophecy_card_0, model_list.prophecy_card_1, model_list.prophecy_card_2)
-#             socketDic={
-#                 "TYPE": "MINISTER_DISCARD", "PAYLOAD": socket_list
-#             }
-#             await wsManager.sendMessage(player_id_candidate, socketDic)
-#         else:
-#             print(" Failed Election...")
-#             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
-#             dbf.set_next_minister_failed_election(game_id)
-
-#     return md.VoteOut(
-#         voteOut=vote_recive.vote,
-#         voteOut_game_id=game_id,
-#         voteOut_response=(f" Player {player_nick} has voted")
-#     )
-
 @app.put(
     "/games/{game_id}/discard_card/",
     status_code = status.HTTP_200_OK,
@@ -940,7 +871,6 @@ async def discard_card(cards: md.Card, game_id: int, user_id: int = Depends(auth
     response_model=md.ViewBoard
 )
 async def post_proclamation(
-        is_phoenix_procl: md.ProclamationCard,
         game_id: int,
         user_id: int = Depends(auth.get_current_active_user)) -> int:
 
@@ -969,9 +899,20 @@ async def post_proclamation(
     # if not (dbf.expeliarmus_state(game_id) == 0):
     #     dbf.deactivate_expeliarmus(game_id)
 
+    step_turn= dbf.get_game_step_turn(game_id)
+
+    if not ("DISCARD_ENDED" == step_turn):
+        raise_exception(
+            status.HTTP_412_PRECONDITION_FAILED,
+            " The cards are not discarted, you can't post"
+        )
+
+
+    promulged_card = dbf.remove_card_for_proclamation(game_id)
+
     # board[0] phoenix - board[1] death eater
     board = dbf.add_proclamation_card_on_board(
-        is_phoenix_procl.proclamationCard_phoenix,
+        promulged_card,
         game_id)  
     
     dbf.reset_failed_elections(game_id)
@@ -1011,8 +952,6 @@ async def post_proclamation(
     coded_game_deck= dbf.get_coded_deck(game_id)
     decoded_game_deck= dbf.get_decoded_deck(coded_game_deck)
 
-    promulged_card = dbf.remove_card_for_proclamation(game_id)
-
     if(len(decoded_game_deck) <= 3): # shuffles the deck if there are less than 3 cards
         # Checks how many proclamations are posted (if they have been posted, they cant be in the deck)
         total_phoenix= dbf.get_total_proclamations_phoenix(game_id)
@@ -1024,7 +963,7 @@ async def post_proclamation(
     socketDic= { "TYPE": "PROCLAMATION", "PAYLOAD": promulged_card} #is_phoenix_procl.proclamationCard_phoenix } # Should be the same
     await wsManager.broadcastInGame(game_id, socketDic)
 
-    if is_phoenix_procl.proclamationCard_phoenix:
+    if promulged_card:
         dbf.set_next_minister(game_id) #! FIXME Checks
         # if (dbf.is_imperius_active(game_id)):
         #     dbf.finish_imperius(game_id)
@@ -1056,6 +995,7 @@ async def post_proclamation(
                 socketDict= { "TYPE": "REQUEST_SPELL", "PAYLOAD": "AVADA_KEDRAVA" }
                 await wsManager.sendMessage(player_id_current_minister, socketDict)
 
+    
     dbf.set_game_step_turn("POST_PROCLAMATION_ENDED", game_id) # Set step_turn #! REVIEW step_turn
 
     return md.ViewBoard(
