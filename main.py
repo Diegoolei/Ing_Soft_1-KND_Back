@@ -460,6 +460,24 @@ async def get_relative_game_information(game_id: int, user_id: int = Depends(aut
         game_info["player_array"][nick]["connected"] = wsManager.isPlayerConnected(p_id)
     return game_info
 
+@app.get(
+    "/games/{game_id}/deck",
+    status_code=status.HTTP_200_OK,
+)
+async def get_deck_amount(game_id: int, user_id: int = Depends(auth.get_current_active_user)):
+    game_exists = dbf.check_game_exists(game_id)
+    if not game_exists:
+        raise_exception(
+            status.HTTP_409_CONFLICT,
+            " The game you selected does not exist"
+        )
+    if not dbf.is_user_in_game(user_id, game_id):
+        raise_exception(status.HTTP_412_PRECONDITION_FAILED,
+        " You are not on the game requested.")
+
+    response = { "cards_in_deck": dbf.get_amount_deck(game_id) }
+    return response
+
 
 # board endpoints
 @app.post(
@@ -1069,10 +1087,9 @@ async def spell_expelliarmus(minister_decition: md.MinisterDecition, game_id: in
     return md.ResponseText( responseText = responseText)
 
 
-@app.get(
+@app.post(
     "/games/{game_id}/spell/crucio",
-    status_code=status.HTTP_200_OK,
-    response_model=md.ResponseText
+    status_code=status.HTTP_200_OK
 )
 async def spell_crucio(victim: md.Victim, game_id: int, user_id: int = Depends(auth.get_current_active_user)):
     game_exists = dbf.check_game_exists(game_id)
@@ -1171,9 +1188,9 @@ async def spell_crucio(victim: md.Victim, game_id: int, user_id: int = Depends(a
     
     dbf.activate_crucio(victim.victim_number, game_id)
     if dbf.get_player_role(victim_id) == 0:
-        victim_role = "Phoenix"
+        victim_role = 0
     else:
-        victim_role = "Death Eater"
+        victim_role = 1
 
     dbf.set_next_minister(game_id)
     # actual_minister = dbf.get_actual_minister(game_id)
@@ -1183,7 +1200,7 @@ async def spell_crucio(victim: md.Victim, game_id: int, user_id: int = Depends(a
     # minister_id = dbf.get_player_id_by_player_number(actual_minister, game_id)
     # await wsManager.sendMessage(minister_id, minister_ws)
     dbf.set_game_step_turn("SPELL", game_id) # Set step_turn
-    return md.ResponseText(responseText = (f" {victim_nick} is a {victim_role}"))
+    return { "allegiance": victim_role }
 
 
 @app.put(
