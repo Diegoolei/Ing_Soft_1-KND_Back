@@ -102,8 +102,7 @@ def test_register_Carol():
                     "userIn_username": "Carol"
                     }
             )
-
-
+            
 def getToken_Carol():
     response = client.post("/login/", data={"username":"C@c.com", "password":"12345678" })
     token = "Bearer " + response.json()["access_token"]
@@ -120,7 +119,6 @@ def test_register_Dexter():
                     "userIn_username": "Dexter"
                     }
             )
-
 
 def getToken_Dexter():
     response = client.post("/login/", data={"username":"D@d.com", "password":"12345678" })
