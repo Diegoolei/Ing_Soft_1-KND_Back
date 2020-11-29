@@ -558,7 +558,7 @@ def test_board_game():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 #?############################# END TURN 2 #############################?#
 #?############################# END TURN 2 #############################?#
@@ -976,7 +976,7 @@ def test_board_game_1():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 
 #?############################# END TURN 4 #############################?#
@@ -1218,7 +1218,7 @@ def test_board_game_2():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 
         elif (dbf.get_spell(3) == "Imperius"):
@@ -1477,7 +1477,7 @@ def test_board_game_3():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 
         elif (dbf.get_spell(3) == "Imperius"):
@@ -1809,7 +1809,7 @@ def test_board_game_4():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 
         elif (dbf.get_spell(3) == "Imperius"):
@@ -2123,7 +2123,7 @@ def test_board_game_5():
                 victim_role = "Phoenix"
             else:
                 victim_role = "Death Eater"
-
+            #acaand
             assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
 
         elif (dbf.get_spell(3) == "Imperius"):

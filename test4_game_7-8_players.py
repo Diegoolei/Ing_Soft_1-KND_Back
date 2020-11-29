@@ -861,11 +861,10 @@ def test_board_game_1():
             victim_id = dbf.get_player_id_by_player_number(victim, 1)
             victim_nick = dbf.get_player_nick_by_id(victim_id)
             if dbf.get_player_role(victim_id) == 0:
-                victim_role = "Phoenix"
+                victim_role = 0
             else:
-                victim_role = "Death Eater"
-
-            assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
+                victim_role = 1
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
 
 #?############################# END TURN 4 #############################?#
 #?############################# END TURN 4 #############################?#
@@ -1071,11 +1070,10 @@ def test_board_game_2():
             victim_id = dbf.get_player_id_by_player_number(victim, 1)
             victim_nick = dbf.get_player_nick_by_id(victim_id)
             if dbf.get_player_role(victim_id) == 0:
-                victim_role = "Phoenix"
+                victim_role = 0
             else:
-                victim_role = "Death Eater"
-
-            assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
+                victim_role = 1
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
 
         elif (dbf.get_spell(1) == "Imperius"):
             minister = dbf.get_actual_minister(1)
@@ -1297,11 +1295,10 @@ def test_board_game_3():
             victim_id = dbf.get_player_id_by_player_number(victim, 1)
             victim_nick = dbf.get_player_nick_by_id(victim_id)
             if dbf.get_player_role(victim_id) == 0:
-                victim_role = "Phoenix"
+                victim_role = 0
             else:
-                victim_role = "Death Eater"
-
-            assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
+                victim_role = 1
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
 
         elif (dbf.get_spell(1) == "Imperius"):
             minister = dbf.get_actual_minister(1)
@@ -1587,11 +1584,10 @@ def test_board_game_4():
             victim_id = dbf.get_player_id_by_player_number(victim, 1)
             victim_nick = dbf.get_player_nick_by_id(victim_id)
             if dbf.get_player_role(victim_id) == 0:
-                victim_role = "Phoenix"
+                victim_role = 0
             else:
-                victim_role = "Death Eater"
-
-            assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
+                victim_role = 1
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
 
         elif (dbf.get_spell(1) == "Imperius"):
             victim = not_dead_or_myself(5,1)
@@ -1857,11 +1853,10 @@ def test_board_game_5():
             victim_id = dbf.get_player_id_by_player_number(victim, 1)
             victim_nick = dbf.get_player_nick_by_id(victim_id)
             if dbf.get_player_role(victim_id) == 0:
-                victim_role = "Phoenix"
+                victim_role = 0
             else:
-                victim_role = "Death Eater"
-
-            assert ((response.json()["responseText"] == (f" {victim_nick} is a {victim_role}")) and (response.status_code == 200))
+                victim_role = 1
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
 
         elif (dbf.get_spell(1) == "Imperius"):
             victim = not_dead_or_myself(5,1)
