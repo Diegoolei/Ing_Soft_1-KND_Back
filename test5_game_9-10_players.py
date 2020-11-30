@@ -558,7 +558,8 @@ def test_board_game():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
+
 #?############################# END TURN 2 #############################?#
 #?############################# END TURN 2 #############################?#
 #?############################# END TURN 2 #############################?#
@@ -975,7 +976,7 @@ def test_board_game_1():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
 
 #?############################# END TURN 4 #############################?#
 #?############################# END TURN 4 #############################?#
@@ -1216,7 +1217,7 @@ def test_board_game_2():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
 
         elif (dbf.get_spell(3) == "Imperius"):
             if (dbf.is_imperius_active(3) == -1):
@@ -1474,7 +1475,7 @@ def test_board_game_3():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
 
         elif (dbf.get_spell(3) == "Imperius"):
             if (dbf.is_imperius_active(3) == -1):
@@ -1805,7 +1806,7 @@ def test_board_game_4():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
 
         elif (dbf.get_spell(3) == "Imperius"):
             if (dbf.is_imperius_active(3) == -1):
@@ -2118,7 +2119,7 @@ def test_board_game_5():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200))
+            assert ((response.json()["allegiance"] == victim_role and (response.status_code == 200)))
 
         elif (dbf.get_spell(3) == "Imperius"):
             if (dbf.is_imperius_active(3) == -1):
