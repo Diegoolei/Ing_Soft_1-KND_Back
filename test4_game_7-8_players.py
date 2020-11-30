@@ -872,7 +872,7 @@ def test_board_game_1():
                 victim_role = 0
             else:
                 victim_role = 1
-            assert (response.json()["detail"] == victim_role and (response.status_code == 200))
+            assert (response.json()["role"] == victim_role and (response.status_code == 200))
 
 #?############################# END TURN 4 #############################?#
 #?############################# END TURN 4 #############################?#
