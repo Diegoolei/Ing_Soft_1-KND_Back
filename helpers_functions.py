@@ -68,7 +68,8 @@ def generate_new_deck(proclaimed_fenix: int = 0, proclaimed_death_eater: int = 0
 
 async def newMinister(wsManager, game_id : int):
     minister_player_number = dbf.get_actual_minister(game_id)
-    response_ws = { "TYPE": "NEW_MINISTER", "PAYLOAD": dbf.get_player_nick_by_id(minister_player_number)}
+    minister_player_id = dbf.get_player_id_by_player_number(minister_player_number, game_id)
+    response_ws = { "TYPE": "NEW_MINISTER", "PAYLOAD": dbf.get_player_nick_by_id(minister_player_id)}
     await wsManager.broadcastInGame(game_id, response_ws)
     minister_ws = { "TYPE": "REQUEST_CANDIDATE", "PAYLOAD": get_possible_candidates(minister_player_number,game_id)}
     minister_id = dbf.get_player_id_by_player_number(minister_player_number, game_id)
