@@ -666,6 +666,7 @@ async def vote(vote_recive: md.Vote, game_id: int, user_id: int = Depends(auth.g
             dbf.set_game_step_turn("VOTATION_ENDED_NO", game_id) # Set step_turn
             dbf.add_failed_elections(game_id) # +1 game_failed_elections on db
             dbf.set_next_minister_failed_election(game_id)
+            dbf.set_last_proclamation(-1, game_id)
 
             # actual_minister = dbf.get_actual_minister(game_id)
             # response_ws = { "TYPE": "NEW_MINISTER", "PAYLOAD": dbf.get_player_nick_by_id(actual_minister)}
@@ -1176,7 +1177,7 @@ async def spell_crucio(victim: md.Victim, game_id: int, user_id: int = Depends(a
             (f"You can not spell Crucio to {victim_nick}, is already dead")
         )
 
-    if dbf.get_player_number_crucio(game_id) != -1:
+    if dbf.get_player_number_crucio(game_id) == victim.victim_number:
         raise_exception(
             status.HTTP_412_PRECONDITION_FAILED,
             (f"You can not spell Crucio to {victim_nick}, has been already Crucified")
@@ -1200,7 +1201,7 @@ async def spell_crucio(victim: md.Victim, game_id: int, user_id: int = Depends(a
     # minister_id = dbf.get_player_id_by_player_number(actual_minister, game_id)
     # await wsManager.sendMessage(minister_id, minister_ws)
     dbf.set_game_step_turn("SPELL", game_id) # Set step_turn
-    return { "allegiance": victim_role }
+    return md.CrucioOut(role=victim_role)
 
 
 @app.put(
