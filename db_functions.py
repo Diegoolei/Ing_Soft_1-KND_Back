@@ -453,7 +453,13 @@ def get_relative_game_information(user_id: int, game_id: int):
             "house": player.player_user.user_house
         }
     
-    last_message= json.loads(current_player.player_last_message)
+    print(f"Unparsed: '{current_player.player_last_message}'. of type ",type(current_player.player_last_message))
+    strmessage = current_player.player_last_message
+    if(strmessage != ''):
+        last_message= json.loads() #! FIXME
+    else:
+        last_message= {}
+    print(f"Parsed: '{last_message}' of type ", type(last_message))
 
     returnDict = {
         "game_id": game_id,
