@@ -458,6 +458,7 @@ def get_relative_game_information(user_id: int, game_id: int):
         last_message= json.loads()
     else:
         last_message= {}
+
     returnDict = {
         "game_id": game_id,
         "game_step_turn": current_game.game_step_turn,
@@ -1363,6 +1364,7 @@ def add_to_log(winner_team: str, game_id: int):
 ##############################################################################################
 ######################################log functions#########################################
 ##############################################################################################
+
 
 @db_session
 def save_last_message_ws(player_id: int, dict_message: dict):

@@ -52,6 +52,7 @@ class WebsocketManager:
                 #     dbf.save_last_message_ws(player_id, message)
                 # else:
                 await connection.send_json(message)
+
         except KeyError:
             print(f"I can't send '{message}' to player_id = {player_id}'")
 
